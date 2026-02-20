@@ -14,7 +14,7 @@ export function ModuleCard({ module, progress, isLocked }: ModuleCardProps) {
   return (
     <div className={clsx(
       "relative bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 transition-all duration-300",
-      isLocked ? "opacity-75 grayscale" : "hover:shadow-md hover:border-blue-500/50"
+      isLocked ? "opacity-75 grayscale" : "hover:shadow-md hover:border-violet-300 dark:hover:border-violet-500/50"
     )}>
       {isLocked && (
         <div className="absolute inset-0 bg-slate-100/50 dark:bg-slate-900/50 backdrop-blur-[1px] rounded-2xl flex items-center justify-center z-10">
@@ -25,7 +25,7 @@ export function ModuleCard({ module, progress, isLocked }: ModuleCardProps) {
       <div className="flex items-start justify-between mb-4">
         <div className={clsx(
           "p-3 rounded-xl",
-          isLocked ? "bg-slate-100 dark:bg-slate-700 text-slate-400" : "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+          isLocked ? "bg-slate-100 dark:bg-slate-700 text-slate-400" : "bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400"
         )}>
           {/* Simple icon placeholder based on module icon string */}
           <span className="material-symbols-outlined text-2xl">{module.icon}</span>
@@ -49,19 +49,19 @@ export function ModuleCard({ module, progress, isLocked }: ModuleCardProps) {
       </p>
 
       <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5 mb-4">
-        <div 
-          className="bg-blue-600 h-1.5 rounded-full transition-all duration-500" 
+        <div
+          className="bg-gradient-to-r from-violet-400 to-indigo-500 h-1.5 rounded-full transition-all duration-500"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      <Link 
+      <Link
         to={isLocked ? '#' : `/module/${module.id}`}
         className={clsx(
-          "flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-semibold text-sm transition-colors",
-          isLocked 
-            ? "bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed" 
-            : "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20"
+          "flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-semibold text-sm transition-all",
+          isLocked
+            ? "bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed"
+            : "bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white shadow-lg shadow-violet-500/20"
         )}
       >
         {progress === 0 ? <Play size={16} /> : <span className="material-symbols-outlined text-sm">resume</span>}

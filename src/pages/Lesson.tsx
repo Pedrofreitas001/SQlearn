@@ -70,28 +70,51 @@ export function Lesson() {
 
       const solutionResult = executeQuery(lesson.solution);
 
-      const userJson = JSON.stringify(userResult.data);
-      const solutionJson = JSON.stringify(solutionResult.data);
+      const userData = userResult.data as any[];
+      const solData = solutionResult.data as any[];
 
-      if (userJson === solutionJson) {
+      // Normalize for comparison: lowercase keys, round numbers, trim strings
+      const normalize = (rows: any[]) => {
+        if (!rows || rows.length === 0) return [];
+        return rows.map(row => {
+          const normalized: Record<string, any> = {};
+          for (const [key, val] of Object.entries(row)) {
+            const k = key.toLowerCase().trim();
+            if (typeof val === 'number') {
+              normalized[k] = Math.round(val * 100) / 100;
+            } else if (typeof val === 'string') {
+              normalized[k] = val.trim();
+            } else {
+              normalized[k] = val;
+            }
+          }
+          return normalized;
+        });
+      };
+
+      const normUser = normalize(userData);
+      const normSol = normalize(solData);
+
+      // Compare: same columns, same number of rows, same values
+      const isMatch = normUser.length === normSol.length &&
+        normUser.length > 0 &&
+        JSON.stringify(normUser) === JSON.stringify(normSol);
+
+      if (isMatch) {
         setIsSuccess(true);
         setFeedback(null);
         completeLesson(lesson.id);
       } else {
         setAttempts(prev => prev + 1);
 
-        // Provide meaningful feedback
-        const userData = userResult.data as any[];
-        const solData = solutionResult.data as any[];
-
         if (!userData || userData.length === 0) {
           setFeedback('Sua query não retornou nenhum resultado. Verifique as condições do WHERE ou os nomes das tabelas.');
         } else if (solData && userData.length !== solData.length) {
           setFeedback(`Sua query retornou ${userData.length} linha(s), mas o esperado é ${solData.length}. Verifique seus filtros ou agrupamentos.`);
         } else if (solData && userData.length > 0 && solData.length > 0) {
-          const userCols = Object.keys(userData[0]);
-          const solCols = Object.keys(solData[0]);
-          if (userCols.length !== solCols.length || !userCols.every(c => solCols.includes(c))) {
+          const userCols = Object.keys(normUser[0]).sort();
+          const solCols = Object.keys(normSol[0]).sort();
+          if (userCols.length !== solCols.length || userCols.join(',') !== solCols.join(',')) {
             setFeedback(`As colunas do resultado estão diferentes do esperado. Verifique quais colunas você está selecionando e os alias (AS).`);
           } else {
             setFeedback('O resultado está próximo, mas os valores ou a ordenação não conferem. Tente novamente!');
@@ -315,10 +338,12 @@ export function Lesson() {
                   ),
                   ul: ({node, ...props}) => <ul className="list-disc list-outside ml-5 space-y-1 text-slate-600 dark:text-slate-300 mb-3 text-sm" {...props} />,
                   li: ({node, ...props}) => <li className="pl-1" {...props} />,
-                  table: ({node, ...props}) => <div className="overflow-x-auto mb-4"><table className="text-xs w-full" {...props} /></div>,
-                  th: ({node, ...props}) => <th className="text-left px-3 py-2 bg-slate-100 dark:bg-slate-700 font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600" {...props} />,
-                  td: ({node, ...props}) => <td className="px-3 py-2 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300" {...props} />,
-                  blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-400 dark:border-blue-500 pl-4 py-1 my-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-r-lg text-sm" {...props} />,
+                  table: ({node, ...props}) => <div className="overflow-x-auto mb-4 rounded-xl border border-slate-200 dark:border-slate-600"><table className="text-xs w-full border-collapse" {...props} /></div>,
+                  thead: ({node, ...props}) => <thead className="bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-slate-700 dark:to-slate-700" {...props} />,
+                  th: ({node, ...props}) => <th className="text-left px-4 py-2.5 font-bold text-violet-700 dark:text-violet-300 border-b border-slate-200 dark:border-slate-600 text-[11px] uppercase tracking-wider" {...props} />,
+                  td: ({node, ...props}) => <td className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-300" {...props} />,
+                  tr: ({node, ...props}) => <tr className="even:bg-slate-50/50 dark:even:bg-slate-800/30 hover:bg-violet-50/30 dark:hover:bg-violet-900/10 transition-colors" {...props} />,
+                  blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-violet-400 dark:border-violet-500 pl-4 py-2 my-3 bg-violet-50/50 dark:bg-violet-900/10 rounded-r-lg text-sm" {...props} />,
                   strong: ({node, ...props}) => <strong className="text-slate-900 dark:text-white font-semibold" {...props} />,
                 }}
               >
@@ -327,15 +352,15 @@ export function Lesson() {
             </div>
 
             {/* Challenge Box */}
-            <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 rounded-xl p-5 relative overflow-hidden">
-              <h3 className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 mb-2 uppercase tracking-wider">
+            <div className="bg-gradient-to-br from-violet-50 to-indigo-50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-800 rounded-xl p-5 relative overflow-hidden">
+              <h3 className="flex items-center gap-2 text-xs font-bold text-violet-600 dark:text-violet-400 mb-2 uppercase tracking-wider">
                 Desafio
               </h3>
               <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed">
                 {lesson.description}
               </p>
 
-              <div className="mt-4 pt-3 border-t border-blue-100 dark:border-blue-800/50 space-y-3">
+              <div className="mt-4 pt-3 border-t border-violet-100 dark:border-violet-800/50 space-y-3">
                 <button
                   onClick={() => setShowHint(!showHint)}
                   className="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-1 transition-colors"

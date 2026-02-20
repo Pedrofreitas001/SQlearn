@@ -57,13 +57,26 @@ SELECT * FROM clientes;
 
 > **Dica profissional:** em projetos reais, evite \`SELECT *\` — sempre liste as colunas que precisa. Isso torna a query mais eficiente e mais fácil de entender.
 
+### A tabela \`clientes\`
+
+Neste desafio, você vai consultar a tabela **clientes**, que tem estas colunas:
+
+| Coluna | Tipo | Exemplo |
+|--------|------|---------|
+| \`id\` | Número | 1 |
+| \`nome\` | Texto | Ana Silva |
+| \`email\` | Texto | ana.silva@email.com |
+| \`cidade\` | Texto | São Paulo |
+| \`estado\` | Texto | SP |
+| \`data_cadastro\` | Data | 2022-01-15 |
+
 ### Conceitos-chave
 
 | Termo | Significado |
 |-------|-------------|
-| **Tabela** | Um conjunto de dados organizado em linhas e colunas (como uma planilha) |
-| **Coluna** | Um campo específico (ex: nome, email) |
-| **Linha** | Um registro individual (ex: um cliente específico) |
+| **Tabela** | Um conjunto de dados organizado em linhas e colunas |
+| **Coluna** | Um campo específico (ex: \`nome\`, \`email\`) |
+| **Linha** | Um registro individual (ex: um cliente) |
     `,
     initialCode: `-- Selecione o nome e o email de todos os clientes\nSELECT nome, email\nFROM clientes;`,
     solution: `SELECT nome, email FROM clientes`,
@@ -110,6 +123,18 @@ WHERE cidade = 'São Paulo';
 \`\`\`
 
 > **Atenção:** textos (strings) sempre devem estar entre aspas simples: \`'São Paulo'\`. Números não precisam de aspas.
+
+### A tabela \`produtos\`
+
+Neste desafio, você vai filtrar a tabela **produtos**:
+
+| Coluna | Tipo | Exemplo |
+|--------|------|---------|
+| \`id\` | Número | 1 |
+| \`nome\` | Texto | Notebook Gamer X1 |
+| \`categoria\` | Texto | Eletrônicos |
+| \`preco\` | Decimal | 4500.00 |
+| \`estoque\` | Número | 15 |
     `,
     initialCode: `-- Selecione todos os produtos com preço maior que 1000\nSELECT *\nFROM produtos\nWHERE ...`,
     solution: `SELECT * FROM produtos WHERE preco > 1000`,
@@ -158,6 +183,10 @@ Datas em SQL são comparadas como textos no formato \`'AAAA-MM-DD'\`:
 SELECT * FROM pedidos
 WHERE data_pedido >= '2024-01-01';
 \`\`\`
+
+### Dados disponíveis
+
+A tabela **clientes** tem clientes de várias cidades (São Paulo, Rio de Janeiro, Curitiba...) com datas de cadastro entre 2022 e 2024. Use \`cidade = 'São Paulo'\` e \`data_cadastro >= '2023-01-01'\`.
     `,
     initialCode: `-- Selecione os clientes de São Paulo cadastrados a partir de 2023\nSELECT *\nFROM clientes\nWHERE cidade = '...' AND data_cadastro >= '...'`,
     solution: `SELECT * FROM clientes WHERE cidade = 'São Paulo' AND data_cadastro >= '2023-01-01'`,
@@ -205,6 +234,17 @@ FROM funcionarios
 ORDER BY departamento ASC, salario DESC;
 \`\`\`
 Isso organiza primeiro por departamento (A→Z), e dentro de cada departamento, pelo salário (maior primeiro).
+
+### A tabela \`funcionarios\`
+
+| Coluna | Tipo | Exemplo |
+|--------|------|---------|
+| \`id\` | Número | 1 |
+| \`nome\` | Texto | Fernanda Oliveira |
+| \`departamento\` | Texto | Vendas |
+| \`cargo\` | Texto | Vendedora |
+| \`salario\` | Decimal | 3500.00 |
+| \`data_contratacao\` | Data | 2021-01-10 |
     `,
     initialCode: `-- Liste todos os funcionários ordenados pelo salário (maior para menor)\nSELECT nome, cargo, salario\nFROM funcionarios\nORDER BY ...`,
     solution: `SELECT nome, cargo, salario FROM funcionarios ORDER BY salario DESC`,
