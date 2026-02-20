@@ -24,7 +24,10 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        # Remove lock file before install so npm resolves the correct
+        # platform-specific native binaries (@tailwindcss/oxide / Rust).
+        # The lock file generated on macOS/Windows misses Linux binaries.
+        run: rm -f package-lock.json && npm install
 
       - name: Type check
         run: npm run lint
@@ -36,5 +39,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: dist-${{ matrix.node-version }}
+          name: dist-node${{ matrix.node-version }}
           path: dist/
+          retention-days: 7
