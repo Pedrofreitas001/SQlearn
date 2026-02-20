@@ -12,7 +12,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        # Node 18 is EOL and not compatible with project dependencies:
+        # @tailwindcss/oxide@4.2.0 requires node >= 20
+        # @vitejs/plugin-react@5.x requires ^20.19.0 || >=22.12.0
+        # @supabase/supabase-js@2.97.0 requires node >= 20
+        node-version: [20.x, 22.x]
 
     steps:
       - uses: actions/checkout@v4
@@ -21,19 +25,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          # No npm cache — @tailwindcss/oxide is a platform-specific Rust
-          # native binary. Caching across OSes causes "Cannot find native
-          # binding" errors. A clean install is required on each run.
 
-      - name: Clean install (force platform-specific native binaries)
-        # @tailwindcss/oxide ships Linux/macOS/Windows binaries as optional
-        # deps. npm ci or a cached install can pick up the wrong OS binary.
-        # Wiping both the npm cache and lock file forces npm to download the
-        # correct linux-x64 binary for this runner.
+      - name: Install dependencies
+        # @tailwindcss/oxide is a Rust native binary (platform-specific).
+        # Wiping the npm cache and lock file forces npm to download the
+        # correct linux-x64 binding instead of reusing a cached wrong-OS binary.
         run: |
           npm cache clean --force
           rm -f package-lock.json
           npm install
+
+      - name: Explicitly install oxide linux binding
+        # Ensure the platform-specific native module for @tailwindcss/oxide
+        # is present. npm sometimes skips optional deps — this guarantees it.
+        run: |
+          node -e "require('@tailwindcss/oxide')" 2>/dev/null \
+            || npm install @tailwindcss/oxide-linux-x64-gnu --no-save
 
       - name: Type check
         run: npm run lint
