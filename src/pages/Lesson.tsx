@@ -6,9 +6,12 @@ import { executeQuery } from '@/lib/db';
 import { SqlEditor } from '@/components/SqlEditor';
 import { ResultTable } from '@/components/ResultTable';
 import { SchemaPanel } from '@/components/SchemaPanel';
-import { ArrowLeft, CheckCircle, HelpCircle, ChevronRight, ChevronLeft, List, Database, X } from 'lucide-react';
+import { ArrowLeft, CheckCircle, HelpCircle, ChevronRight, ChevronLeft, List, Database, X, BookOpen, Code2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import clsx from 'clsx';
+
+type LessonStep = 'learn' | 'quiz' | 'code';
 
 export function Lesson() {
   const { moduleId, lessonId } = useParams();
@@ -16,6 +19,7 @@ export function Lesson() {
   const { completeLesson, completedLessons } = useGamification();
 
   const [lesson, setLesson] = useState<LessonType | null>(null);
+  const [step, setStep] = useState<LessonStep>('learn');
   const [code, setCode] = useState('');
   const [result, setResult] = useState<any[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +30,10 @@ export function Lesson() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSchemaOpen, setIsSchemaOpen] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  // Quiz state
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [quizAnswered, setQuizAnswered] = useState(false);
 
   useEffect(() => {
     if (moduleId && lessonId) {
@@ -41,11 +49,20 @@ export function Lesson() {
         setShowHint(false);
         setAttempts(0);
         setFeedback(null);
+        setStep('learn');
+        setSelectedAnswer(null);
+        setQuizAnswered(false);
       } else {
         navigate('/');
       }
     }
   }, [moduleId, lessonId, navigate]);
+
+  const handleQuizAnswer = (index: number) => {
+    if (quizAnswered) return;
+    setSelectedAnswer(index);
+    setQuizAnswered(true);
+  };
 
   const handleRun = async () => {
     if (!lesson) return;
@@ -73,7 +90,6 @@ export function Lesson() {
       const userData = userResult.data as any[];
       const solData = solutionResult.data as any[];
 
-      // Normalize for comparison: lowercase keys, round numbers, trim strings
       const normalize = (rows: any[]) => {
         if (!rows || rows.length === 0) return [];
         return rows.map(row => {
@@ -95,7 +111,6 @@ export function Lesson() {
       const normUser = normalize(userData);
       const normSol = normalize(solData);
 
-      // Compare: same columns, same number of rows, same values
       const isMatch = normUser.length === normSol.length &&
         normUser.length > 0 &&
         JSON.stringify(normUser) === JSON.stringify(normSol);
@@ -115,7 +130,7 @@ export function Lesson() {
           const userCols = Object.keys(normUser[0]).sort();
           const solCols = Object.keys(normSol[0]).sort();
           if (userCols.length !== solCols.length || userCols.join(',') !== solCols.join(',')) {
-            setFeedback(`As colunas do resultado estão diferentes do esperado. Verifique quais colunas você está selecionando e os alias (AS).`);
+            setFeedback('As colunas do resultado estão diferentes do esperado. Verifique quais colunas você está selecionando e os alias (AS).');
           } else {
             setFeedback('O resultado está próximo, mas os valores ou a ordenação não conferem. Tente novamente!');
           }
@@ -179,8 +194,44 @@ export function Lesson() {
   if (!lesson) return null;
 
   const currentModule = curriculum.find(m => m.id === moduleId);
-  const totalLessons = curriculum.reduce((acc, m) => acc + m.lessons.length, 0);
-  const completedTotal = completedLessons.length;
+
+  const markdownComponents = {
+    h1: ({node, ...props}: any) => <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-3 pb-2 border-b border-slate-100 dark:border-slate-700" {...props} />,
+    h2: ({node, ...props}: any) => <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mt-5 mb-2" {...props} />,
+    h3: ({node, ...props}: any) => <h3 className="text-base font-medium text-slate-800 dark:text-slate-200 mt-4 mb-2" {...props} />,
+    p: ({node, ...props}: any) => <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm" {...props} />,
+    code: ({node, className, children, ...props}: any) => {
+      return !className?.includes('language-') ? (
+        <code className="bg-violet-50 dark:bg-slate-700/50 text-violet-700 dark:text-violet-300 px-1.5 py-0.5 rounded text-xs font-mono font-semibold" {...props}>
+          {children}
+        </code>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      )
+    },
+    pre: ({node, ...props}: any) => (
+      <pre className="bg-slate-900 text-slate-50 p-3 rounded-xl overflow-x-auto mb-4 border border-slate-800 text-xs leading-relaxed" {...props} />
+    ),
+    ul: ({node, ...props}: any) => <ul className="list-disc list-outside ml-5 space-y-1 text-slate-600 dark:text-slate-300 mb-3 text-sm" {...props} />,
+    ol: ({node, ...props}: any) => <ol className="list-decimal list-outside ml-5 space-y-1 text-slate-600 dark:text-slate-300 mb-3 text-sm" {...props} />,
+    li: ({node, ...props}: any) => <li className="pl-1" {...props} />,
+    table: ({node, ...props}: any) => <div className="overflow-x-auto mb-4 rounded-xl border border-slate-200 dark:border-slate-600"><table className="text-xs w-full border-collapse" {...props} /></div>,
+    thead: ({node, ...props}: any) => <thead className="bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-slate-700 dark:to-slate-700" {...props} />,
+    th: ({node, ...props}: any) => <th className="text-left px-4 py-2.5 font-bold text-violet-700 dark:text-violet-300 border-b border-slate-200 dark:border-slate-600 text-[11px] uppercase tracking-wider" {...props} />,
+    td: ({node, ...props}: any) => <td className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-300" {...props} />,
+    tr: ({node, ...props}: any) => <tr className="even:bg-slate-50/50 dark:even:bg-slate-800/30" {...props} />,
+    blockquote: ({node, ...props}: any) => <blockquote className="border-l-4 border-violet-400 dark:border-violet-500 pl-4 py-2 my-3 bg-violet-50/50 dark:bg-violet-900/10 rounded-r-lg text-sm" {...props} />,
+    strong: ({node, ...props}: any) => <strong className="text-slate-900 dark:text-white font-semibold" {...props} />,
+  };
+
+  // Step indicators
+  const steps = [
+    { key: 'learn' as const, label: 'Aprender', icon: BookOpen },
+    { key: 'quiz' as const, label: 'Quiz', icon: CheckCircle },
+    { key: 'code' as const, label: 'Praticar', icon: Code2 },
+  ];
 
   return (
     <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 overflow-hidden">
@@ -212,19 +263,44 @@ export function Lesson() {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Step indicators */}
+          <div className="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+            {steps.map((s) => (
+              <button
+                key={s.key}
+                onClick={() => {
+                  if (s.key === 'learn') setStep('learn');
+                  else if (s.key === 'quiz' && step !== 'learn') setStep('quiz');
+                  else if (s.key === 'code' && quizAnswered) setStep('code');
+                }}
+                className={clsx(
+                  "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all",
+                  step === s.key
+                    ? "bg-white dark:bg-slate-600 text-violet-700 dark:text-violet-300 shadow-sm"
+                    : "text-slate-400 dark:text-slate-500"
+                )}
+              >
+                <s.icon size={13} />
+                {s.label}
+              </button>
+            ))}
+          </div>
+
           {/* Schema toggle */}
-          <button
-            onClick={() => setIsSchemaOpen(!isSchemaOpen)}
-            className={clsx(
-              "hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors border",
-              isSchemaOpen
-                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800"
-                : "bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600"
-            )}
-          >
-            <Database size={13} />
-            Schema
-          </button>
+          {step === 'code' && (
+            <button
+              onClick={() => setIsSchemaOpen(!isSchemaOpen)}
+              className={clsx(
+                "hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors border",
+                isSchemaOpen
+                  ? "bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800"
+                  : "bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600"
+              )}
+            >
+              <Database size={13} />
+              Schema
+            </button>
+          )}
 
           <button
             onClick={handlePrevLesson}
@@ -239,7 +315,7 @@ export function Lesson() {
                 key={l.id}
                 className={clsx(
                   "w-2 h-2 rounded-full transition-colors cursor-pointer",
-                  l.id === lesson.id ? "bg-blue-600 dark:bg-blue-400 scale-125" :
+                  l.id === lesson.id ? "bg-violet-600 dark:bg-violet-400 scale-125" :
                   completedLessons.includes(l.id) ? "bg-emerald-500 dark:bg-emerald-400" :
                   "bg-slate-200 dark:bg-slate-700"
                 )}
@@ -281,7 +357,7 @@ export function Lesson() {
                 }}
                 className={clsx(
                   "w-full text-left p-4 border-b border-slate-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors flex items-start gap-3",
-                  l.id === lesson.id && "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500"
+                  l.id === lesson.id && "bg-violet-50 dark:bg-violet-900/20 border-l-4 border-l-violet-500"
                 )}
               >
                 <div className={clsx(
@@ -289,13 +365,13 @@ export function Lesson() {
                   completedLessons.includes(l.id)
                     ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
                     : l.id === lesson.id
-                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                    ? "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400"
                     : "bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400"
                 )}>
                   {completedLessons.includes(l.id) ? <CheckCircle size={12} /> : idx + 1}
                 </div>
                 <div>
-                  <p className={clsx("text-sm font-medium", l.id === lesson.id ? "text-blue-700 dark:text-blue-400" : "text-slate-700 dark:text-slate-300")}>
+                  <p className={clsx("text-sm font-medium", l.id === lesson.id ? "text-violet-700 dark:text-violet-400" : "text-slate-700 dark:text-slate-300")}>
                     {l.title}
                   </p>
                 </div>
@@ -312,162 +388,249 @@ export function Lesson() {
           />
         )}
 
-        {/* Left Panel: Content */}
-        <aside className="w-1/3 min-w-[320px] max-w-[480px] hidden md:flex flex-col bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 overflow-y-auto z-10">
-          <div className="p-6 pb-20">
-            <div className="prose prose-slate dark:prose-invert prose-sm max-w-none mb-6">
-              <ReactMarkdown
-                components={{
-                  h1: ({node, ...props}) => <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-3 pb-2 border-b border-slate-100 dark:border-slate-700" {...props} />,
-                  h2: ({node, ...props}) => <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mt-5 mb-2" {...props} />,
-                  h3: ({node, ...props}) => <h3 className="text-base font-medium text-slate-800 dark:text-slate-200 mt-4 mb-2" {...props} />,
-                  p: ({node, ...props}) => <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm" {...props} />,
-                  code: ({node, className, children, ...props}) => {
-                    return !className?.includes('language-') ? (
-                      <code className="bg-slate-100 dark:bg-slate-700/50 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded text-xs font-mono" {...props}>
-                        {children}
-                      </code>
-                    ) : (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    )
-                  },
-                  pre: ({node, ...props}) => (
-                    <pre className="bg-slate-900 text-slate-50 p-3 rounded-xl overflow-x-auto mb-4 border border-slate-800 text-xs leading-relaxed" {...props} />
-                  ),
-                  ul: ({node, ...props}) => <ul className="list-disc list-outside ml-5 space-y-1 text-slate-600 dark:text-slate-300 mb-3 text-sm" {...props} />,
-                  li: ({node, ...props}) => <li className="pl-1" {...props} />,
-                  table: ({node, ...props}) => <div className="overflow-x-auto mb-4 rounded-xl border border-slate-200 dark:border-slate-600"><table className="text-xs w-full border-collapse" {...props} /></div>,
-                  thead: ({node, ...props}) => <thead className="bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-slate-700 dark:to-slate-700" {...props} />,
-                  th: ({node, ...props}) => <th className="text-left px-4 py-2.5 font-bold text-violet-700 dark:text-violet-300 border-b border-slate-200 dark:border-slate-600 text-[11px] uppercase tracking-wider" {...props} />,
-                  td: ({node, ...props}) => <td className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-300" {...props} />,
-                  tr: ({node, ...props}) => <tr className="even:bg-slate-50/50 dark:even:bg-slate-800/30 hover:bg-violet-50/30 dark:hover:bg-violet-900/10 transition-colors" {...props} />,
-                  blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-violet-400 dark:border-violet-500 pl-4 py-2 my-3 bg-violet-50/50 dark:bg-violet-900/10 rounded-r-lg text-sm" {...props} />,
-                  strong: ({node, ...props}) => <strong className="text-slate-900 dark:text-white font-semibold" {...props} />,
-                }}
-              >
-                {lesson.content}
-              </ReactMarkdown>
+        {/* ══════════════════════════════════════════════ */}
+        {/* STEP 1: LEARN — Read the lesson content       */}
+        {/* ══════════════════════════════════════════════ */}
+        {step === 'learn' && (
+          <div className="flex-1 overflow-y-auto">
+            <div className="max-w-3xl mx-auto p-6 md:p-10 pb-32">
+              <div className="prose prose-slate dark:prose-invert prose-sm max-w-none">
+                <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                  {lesson.content}
+                </ReactMarkdown>
+              </div>
+
+              {/* CTA to go to quiz */}
+              <div className="mt-8 flex justify-center">
+                <button
+                  onClick={() => setStep('quiz')}
+                  className="bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-violet-500/20 hover:shadow-xl transition-all flex items-center gap-2 text-sm"
+                >
+                  Testar meu conhecimento
+                  <ChevronRight size={18} />
+                </button>
+              </div>
             </div>
+          </div>
+        )}
 
-            {/* Challenge Box */}
-            <div className="bg-gradient-to-br from-violet-50 to-indigo-50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-800 rounded-xl p-5 relative overflow-hidden">
-              <h3 className="flex items-center gap-2 text-xs font-bold text-violet-600 dark:text-violet-400 mb-2 uppercase tracking-wider">
-                Desafio
-              </h3>
-              <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed">
-                {lesson.description}
-              </p>
+        {/* ══════════════════════════════════════════════ */}
+        {/* STEP 2: QUIZ — Multiple choice question       */}
+        {/* ══════════════════════════════════════════════ */}
+        {step === 'quiz' && lesson.quiz && (
+          <div className="flex-1 overflow-y-auto">
+            <div className="max-w-2xl mx-auto p-6 md:p-10 pb-32">
+              <div className="text-center mb-8">
+                <span className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider">Quiz Rápido</span>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-2">{lesson.quiz.question}</h2>
+              </div>
 
-              <div className="mt-4 pt-3 border-t border-violet-100 dark:border-violet-800/50 space-y-3">
+              <div className="space-y-3">
+                {lesson.quiz.options.map((option, index) => {
+                  const isSelected = selectedAnswer === index;
+                  const isCorrect = option.isCorrect;
+                  const showResult = quizAnswered;
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => handleQuizAnswer(index)}
+                      disabled={quizAnswered}
+                      className={clsx(
+                        "w-full text-left p-4 rounded-xl border-2 transition-all font-medium text-sm",
+                        !showResult && !isSelected && "border-slate-200 dark:border-slate-600 hover:border-violet-300 dark:hover:border-violet-500 hover:bg-violet-50/50 dark:hover:bg-violet-900/10",
+                        !showResult && isSelected && "border-violet-500 bg-violet-50 dark:bg-violet-900/20",
+                        showResult && isCorrect && "border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-200",
+                        showResult && isSelected && !isCorrect && "border-red-400 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200",
+                        showResult && !isSelected && !isCorrect && "border-slate-200 dark:border-slate-700 opacity-50",
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={clsx(
+                          "w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0",
+                          !showResult && "bg-slate-100 dark:bg-slate-700 text-slate-500",
+                          showResult && isCorrect && "bg-emerald-200 dark:bg-emerald-800 text-emerald-700 dark:text-emerald-300",
+                          showResult && isSelected && !isCorrect && "bg-red-200 dark:bg-red-800 text-red-700 dark:text-red-300",
+                          showResult && !isSelected && !isCorrect && "bg-slate-100 dark:bg-slate-700 text-slate-400",
+                        )}>
+                          {showResult && isCorrect ? <CheckCircle size={16} /> :
+                           showResult && isSelected && !isCorrect ? <X size={16} /> :
+                           String.fromCharCode(65 + index)}
+                        </div>
+                        <span>{option.text}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Quiz feedback */}
+              {quizAnswered && (
+                <div className={clsx(
+                  "mt-6 p-4 rounded-xl border text-sm",
+                  lesson.quiz.options[selectedAnswer!]?.isCorrect
+                    ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200"
+                    : "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200"
+                )}>
+                  <p className="font-bold mb-1">
+                    {lesson.quiz.options[selectedAnswer!]?.isCorrect ? 'Correto!' : 'Não é bem isso...'}
+                  </p>
+                  <p>{lesson.quiz.explanation}</p>
+                </div>
+              )}
+
+              {/* CTA to go to code */}
+              {quizAnswered && (
+                <div className="mt-8 flex justify-center">
+                  <button
+                    onClick={() => setStep('code')}
+                    className="bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-violet-500/20 hover:shadow-xl transition-all flex items-center gap-2 text-sm"
+                  >
+                    Agora vamos praticar!
+                    <Code2 size={18} />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════════ */}
+        {/* STEP 3: CODE — SQL editor + results           */}
+        {/* ══════════════════════════════════════════════ */}
+        {step === 'code' && (
+          <>
+            {/* Left Panel: Challenge + Hint */}
+            <aside className="w-1/3 min-w-[300px] max-w-[420px] hidden md:flex flex-col bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 overflow-y-auto z-10">
+              <div className="p-6 pb-20">
+                {/* Challenge Box */}
+                <div className="bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-slate-700/50 dark:to-slate-700/50 border border-violet-100 dark:border-violet-800 rounded-xl p-5">
+                  <h3 className="flex items-center gap-2 text-xs font-bold text-violet-600 dark:text-violet-400 mb-3 uppercase tracking-wider">
+                    Desafio
+                  </h3>
+                  <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed">
+                    {lesson.description}
+                  </p>
+
+                  <div className="mt-4 pt-3 border-t border-violet-100 dark:border-violet-800/50 space-y-3">
+                    <button
+                      onClick={() => setShowHint(!showHint)}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-1 transition-colors"
+                    >
+                      <HelpCircle size={14} />
+                      {showHint ? 'Esconder Dica' : 'Preciso de uma dica'}
+                    </button>
+
+                    {showHint && (
+                      <div className="p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 text-xs rounded-lg border border-amber-200 dark:border-amber-800/50 leading-relaxed">
+                        <span className="font-bold mr-1">Dica:</span> {lesson.hint}
+                      </div>
+                    )}
+
+                    {attempts >= 3 && !isSuccess && (
+                      <button
+                        onClick={handleShowSolution}
+                        className="w-full py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-lg border border-red-100 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors flex items-center justify-center gap-2"
+                      >
+                        Mostrar Resposta
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Back to lesson link */}
+                <button
+                  onClick={() => setStep('learn')}
+                  className="mt-4 text-xs text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 flex items-center gap-1 transition-colors"
+                >
+                  <BookOpen size={12} />
+                  Reler a explicação
+                </button>
+              </div>
+            </aside>
+
+            {/* Center: Editor & Results */}
+            <div className="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-slate-900">
+              {/* Mobile: show challenge */}
+              <div className="md:hidden p-4 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                  <span className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase mr-2">Desafio:</span>
+                  {lesson.description}
+                </p>
                 <button
                   onClick={() => setShowHint(!showHint)}
-                  className="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-1 transition-colors"
+                  className="mt-2 text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 flex items-center gap-1"
                 >
-                  <HelpCircle size={14} />
-                  {showHint ? 'Esconder Dica' : 'Preciso de uma dica'}
+                  <HelpCircle size={12} />
+                  {showHint ? 'Esconder' : 'Dica'}
                 </button>
-
                 {showHint && (
-                  <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 text-xs rounded-lg border border-yellow-100 dark:border-yellow-800/50">
-                    <span className="font-bold mr-1">Dica:</span> {lesson.hint}
+                  <p className="mt-2 text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 p-2 rounded">{lesson.hint}</p>
+                )}
+              </div>
+
+              {/* Editor */}
+              <div className="flex-1 min-h-[40%] relative">
+                <SqlEditor
+                  initialValue={code}
+                  onChange={(val) => setCode(val || '')}
+                  onRun={handleRun}
+                  isRunning={isRunning}
+                />
+              </div>
+
+              {/* Results */}
+              <div className="flex-1 min-h-[40%] bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 relative">
+                <ResultTable data={result} error={error} loading={isRunning} />
+
+                {/* Feedback for incorrect answers */}
+                {feedback && !isSuccess && (
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-20">
+                    <div className="bg-orange-50 dark:bg-orange-900/90 backdrop-blur-md border border-orange-200 dark:border-orange-500/50 shadow-lg rounded-xl p-3 flex items-start gap-3">
+                      <div className="bg-orange-500 rounded-full p-1 text-white shrink-0 mt-0.5">
+                        <X size={14} />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-orange-800 dark:text-orange-100">Ainda não está correto</h4>
+                        <p className="text-xs text-orange-600 dark:text-orange-300 mt-0.5">{feedback}</p>
+                      </div>
+                    </div>
                   </div>
                 )}
 
-                {attempts >= 3 && !isSuccess && (
-                  <button
-                    onClick={handleShowSolution}
-                    className="w-full py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-lg border border-red-100 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors flex items-center justify-center gap-2"
-                  >
-                    Mostrar Resposta
-                  </button>
+                {/* Success Overlay */}
+                {isSuccess && (
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-20">
+                    <div className="bg-emerald-50 dark:bg-emerald-900/90 backdrop-blur-md border border-emerald-200 dark:border-emerald-500/50 shadow-2xl rounded-xl p-4 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-emerald-500 rounded-full p-1 text-white shadow-sm">
+                          <CheckCircle size={20} />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-100">Correto!</h4>
+                          <p className="text-xs text-emerald-600 dark:text-emerald-300 mt-0.5">+50 XP ganhos</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={handleNextLesson}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-sm hover:shadow transition-all whitespace-nowrap flex items-center gap-1"
+                      >
+                        Próxima
+                        <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
-          </div>
-        </aside>
 
-        {/* Center: Editor & Results */}
-        <div className="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-slate-900">
-          {/* Mobile: show lesson content as collapsible */}
-          <div className="md:hidden p-4 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-            <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
-              <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mr-2">Desafio:</span>
-              {lesson.description}
-            </p>
-            <button
-              onClick={() => setShowHint(!showHint)}
-              className="mt-2 text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 flex items-center gap-1"
-            >
-              <HelpCircle size={12} />
-              {showHint ? 'Esconder' : 'Dica'}
-            </button>
-            {showHint && (
-              <p className="mt-2 text-xs text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">{lesson.hint}</p>
-            )}
-          </div>
-
-          {/* Editor */}
-          <div className="flex-1 min-h-[40%] relative">
-            <SqlEditor
-              initialValue={code}
-              onChange={(val) => setCode(val || '')}
-              onRun={handleRun}
-              isRunning={isRunning}
-            />
-          </div>
-
-          {/* Results */}
-          <div className="flex-1 min-h-[40%] bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 relative">
-            <ResultTable data={result} error={error} loading={isRunning} />
-
-            {/* Feedback for incorrect answers */}
-            {feedback && !isSuccess && (
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-20">
-                <div className="bg-orange-50 dark:bg-orange-900/90 backdrop-blur-md border border-orange-200 dark:border-orange-500/50 shadow-lg rounded-xl p-3 flex items-start gap-3">
-                  <div className="bg-orange-500 rounded-full p-1 text-white shrink-0 mt-0.5">
-                    <X size={14} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-orange-800 dark:text-orange-100">Ainda não está correto</h4>
-                    <p className="text-xs text-orange-600 dark:text-orange-300 mt-0.5">{feedback}</p>
-                  </div>
-                </div>
+            {/* Right Panel: Schema */}
+            {isSchemaOpen && (
+              <div className="hidden md:block w-56 shrink-0">
+                <SchemaPanel />
               </div>
             )}
-
-            {/* Success Overlay */}
-            {isSuccess && (
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-20">
-                <div className="bg-emerald-50 dark:bg-emerald-900/90 backdrop-blur-md border border-emerald-200 dark:border-emerald-500/50 shadow-2xl rounded-xl p-4 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-emerald-500 rounded-full p-1 text-white shadow-sm">
-                      <CheckCircle size={20} />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-100">Correto!</h4>
-                      <p className="text-xs text-emerald-600 dark:text-emerald-300 mt-0.5">+50 XP ganhos</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleNextLesson}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-sm hover:shadow transition-all whitespace-nowrap flex items-center gap-1"
-                  >
-                    Próxima
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right Panel: Schema */}
-        {isSchemaOpen && (
-          <div className="hidden md:block w-56 shrink-0">
-            <SchemaPanel />
-          </div>
+          </>
         )}
       </main>
     </div>

@@ -1,3 +1,14 @@
+export type QuizOption = {
+  text: string;
+  isCorrect: boolean;
+};
+
+export type Quiz = {
+  question: string;
+  options: QuizOption[];
+  explanation: string;
+};
+
 export type Lesson = {
   id: string;
   moduleId: string;
@@ -8,6 +19,7 @@ export type Lesson = {
   solution: string;
   hint: string;
   order: number;
+  quiz: Quiz;
 };
 
 export type Module = {
@@ -78,9 +90,19 @@ Neste desafio, você vai consultar a tabela **clientes**, que tem estas colunas:
 | **Coluna** | Um campo específico (ex: \`nome\`, \`email\`) |
 | **Linha** | Um registro individual (ex: um cliente) |
     `,
-    initialCode: `-- Selecione o nome e o email de todos os clientes\nSELECT nome, email\nFROM clientes;`,
+    quiz: {
+      question: 'Qual comando SQL é usado para escolher quais colunas você quer ver?',
+      options: [
+        { text: 'FROM', isCorrect: false },
+        { text: 'SELECT', isCorrect: true },
+        { text: 'WHERE', isCorrect: false },
+        { text: 'TABLE', isCorrect: false },
+      ],
+      explanation: 'O SELECT indica quais colunas você quer ver. O FROM indica de qual tabela buscar os dados.',
+    },
+    initialCode: `-- Selecione o nome e o email de todos os clientes\nSELECT ...\nFROM clientes;`,
     solution: `SELECT nome, email FROM clientes`,
-    hint: 'Use SELECT nome, email FROM clientes;',
+    hint: 'Substitua os ... pelas colunas que deseja: nome e email. Exemplo: SELECT nome, email FROM clientes;',
   },
   {
     id: 'l-1-2',
@@ -136,9 +158,19 @@ Neste desafio, você vai filtrar a tabela **produtos**:
 | \`preco\` | Decimal | 4500.00 |
 | \`estoque\` | Número | 15 |
     `,
+    quiz: {
+      question: 'Qual operador filtra linhas que atendem a uma condição?',
+      options: [
+        { text: 'ORDER BY', isCorrect: false },
+        { text: 'GROUP BY', isCorrect: false },
+        { text: 'WHERE', isCorrect: true },
+        { text: 'LIMIT', isCorrect: false },
+      ],
+      explanation: 'O WHERE filtra linhas com base em uma condição. Exemplo: WHERE preco > 1000 retorna apenas produtos com preço acima de 1000.',
+    },
     initialCode: `-- Selecione todos os produtos com preço maior que 1000\nSELECT *\nFROM produtos\nWHERE ...`,
     solution: `SELECT * FROM produtos WHERE preco > 1000`,
-    hint: 'Use WHERE preco > 1000',
+    hint: 'Complete o WHERE com a condição: preco > 1000. A query completa fica: SELECT * FROM produtos WHERE preco > 1000;',
   },
   {
     id: 'l-1-3',
@@ -188,9 +220,19 @@ WHERE data_pedido >= '2024-01-01';
 
 A tabela **clientes** tem clientes de várias cidades (São Paulo, Rio de Janeiro, Curitiba...) com datas de cadastro entre 2022 e 2024. Use \`cidade = 'São Paulo'\` e \`data_cadastro >= '2023-01-01'\`.
     `,
+    quiz: {
+      question: 'Qual operador combina duas condições onde AMBAS devem ser verdadeiras?',
+      options: [
+        { text: 'OR', isCorrect: false },
+        { text: 'NOT', isCorrect: false },
+        { text: 'AND', isCorrect: true },
+        { text: 'BETWEEN', isCorrect: false },
+      ],
+      explanation: 'AND exige que ambas as condições sejam verdadeiras. OR exige que pelo menos uma seja.',
+    },
     initialCode: `-- Selecione os clientes de São Paulo cadastrados a partir de 2023\nSELECT *\nFROM clientes\nWHERE cidade = '...' AND data_cadastro >= '...'`,
     solution: `SELECT * FROM clientes WHERE cidade = 'São Paulo' AND data_cadastro >= '2023-01-01'`,
-    hint: "Combine WHERE cidade = 'São Paulo' AND data_cadastro >= '2023-01-01'",
+    hint: "Substitua os '...' pelos valores corretos: cidade = 'São Paulo' AND data_cadastro >= '2023-01-01'",
   },
   {
     id: 'l-1-4',
@@ -246,9 +288,19 @@ Isso organiza primeiro por departamento (A→Z), e dentro de cada departamento, 
 | \`salario\` | Decimal | 3500.00 |
 | \`data_contratacao\` | Data | 2021-01-10 |
     `,
+    quiz: {
+      question: 'Qual palavra-chave ordena os resultados do MAIOR para o menor?',
+      options: [
+        { text: 'ASC', isCorrect: false },
+        { text: 'DESC', isCorrect: true },
+        { text: 'LIMIT', isCorrect: false },
+        { text: 'TOP', isCorrect: false },
+      ],
+      explanation: 'DESC (descendente) ordena do maior para o menor. ASC (ascendente) ordena do menor para o maior e é o padrão.',
+    },
     initialCode: `-- Liste todos os funcionários ordenados pelo salário (maior para menor)\nSELECT nome, cargo, salario\nFROM funcionarios\nORDER BY ...`,
     solution: `SELECT nome, cargo, salario FROM funcionarios ORDER BY salario DESC`,
-    hint: 'Use ORDER BY salario DESC',
+    hint: 'Complete com: ORDER BY salario DESC. O DESC faz a ordenação do maior para o menor.',
   },
   {
     id: 'l-1-5',
@@ -288,9 +340,19 @@ No mundo real, LIMIT é essencial para:
 - **Performance** — não sobrecarregar o banco trazendo milhões de linhas
 - **Amostragem** — ver uma amostra dos dados antes de fazer análises pesadas
     `,
+    quiz: {
+      question: 'Qual comando limita a quantidade de resultados retornados?',
+      options: [
+        { text: 'MAX', isCorrect: false },
+        { text: 'TOP', isCorrect: false },
+        { text: 'LIMIT', isCorrect: true },
+        { text: 'COUNT', isCorrect: false },
+      ],
+      explanation: 'O LIMIT restringe quantas linhas são retornadas. LIMIT 5 retorna no máximo 5 linhas.',
+    },
     initialCode: `-- Selecione os 5 produtos mais caros\nSELECT nome, preco\nFROM produtos\nORDER BY preco DESC\nLIMIT ...`,
     solution: `SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 5`,
-    hint: 'Ordene por preco DESC e use LIMIT 5',
+    hint: 'Substitua ... por 5. Combinado com ORDER BY preco DESC, isso retorna os 5 mais caros.',
   },
   {
     id: 'l-1-6',
@@ -336,9 +398,19 @@ Isso retorna cada *par* (cidade, estado) apenas uma vez.
 - Descobrir categorias/tipos existentes
 - Contar valores distintos com \`COUNT(DISTINCT coluna)\`
     `,
+    quiz: {
+      question: 'Qual palavra-chave remove valores duplicados do resultado?',
+      options: [
+        { text: 'UNIQUE', isCorrect: false },
+        { text: 'DISTINCT', isCorrect: true },
+        { text: 'DIFFERENT', isCorrect: false },
+        { text: 'GROUP BY', isCorrect: false },
+      ],
+      explanation: 'DISTINCT elimina duplicatas do resultado. SELECT DISTINCT cidade retorna cada cidade apenas uma vez.',
+    },
     initialCode: `-- Liste todas as cidades únicas dos clientes\nSELECT DISTINCT ...\nFROM clientes;`,
     solution: `SELECT DISTINCT cidade FROM clientes`,
-    hint: 'Use SELECT DISTINCT cidade FROM clientes',
+    hint: 'Substitua ... pela coluna que quer ver sem duplicatas: cidade.',
   },
   {
     id: 'l-1-7',
@@ -382,9 +454,19 @@ Use \`NOT LIKE\` para excluir padrões:
 SELECT * FROM produtos WHERE nome NOT LIKE '%Gamer%';
 \`\`\`
     `,
+    quiz: {
+      question: 'No LIKE, o que o caractere % representa?',
+      options: [
+        { text: 'Exatamente um caractere', isCorrect: false },
+        { text: 'Apenas números', isCorrect: false },
+        { text: 'Qualquer sequência de caracteres', isCorrect: true },
+        { text: 'O fim da string', isCorrect: false },
+      ],
+      explanation: "O % representa qualquer sequência de caracteres (inclusive nenhum). '%Gamer%' encontra 'Gamer' em qualquer posição do texto.",
+    },
     initialCode: `-- Selecione todos os produtos cujo nome contém "Gamer"\nSELECT *\nFROM produtos\nWHERE nome LIKE ...`,
     solution: `SELECT * FROM produtos WHERE nome LIKE '%Gamer%'`,
-    hint: "Use WHERE nome LIKE '%Gamer%' — o % antes e depois busca 'Gamer' em qualquer posição",
+    hint: "Use aspas simples com % ao redor: '%Gamer%'. O % antes e depois significa que 'Gamer' pode estar em qualquer posição.",
   },
   {
     id: 'l-1-8',
@@ -438,9 +520,19 @@ WHERE categoria NOT IN ('Móveis', 'Acessórios')
 WHERE preco NOT BETWEEN 100 AND 500
 \`\`\`
     `,
+    quiz: {
+      question: 'O que BETWEEN 200 AND 500 inclui?',
+      options: [
+        { text: 'Valores de 201 a 499 (exclui extremos)', isCorrect: false },
+        { text: 'Valores de 200 a 500 (inclui extremos)', isCorrect: true },
+        { text: 'Apenas o valor 200 ou 500', isCorrect: false },
+        { text: 'Valores acima de 200', isCorrect: false },
+      ],
+      explanation: 'BETWEEN é inclusivo: inclui os dois extremos. BETWEEN 200 AND 500 é igual a preco >= 200 AND preco <= 500.',
+    },
     initialCode: `-- Selecione os produtos com preço entre 200 e 500\nSELECT nome, categoria, preco\nFROM produtos\nWHERE preco BETWEEN ... AND ...`,
     solution: `SELECT nome, categoria, preco FROM produtos WHERE preco BETWEEN 200 AND 500`,
-    hint: 'Use WHERE preco BETWEEN 200 AND 500',
+    hint: 'Substitua os ... pelos valores: BETWEEN 200 AND 500.',
   },
   {
     id: 'l-1-9',
@@ -489,9 +581,19 @@ FROM clientes AS c;
 
 > **Dica:** o AS é opcional para alias de tabelas. \`FROM clientes c\` funciona da mesma forma. Mas usar AS torna o código mais legível.
     `,
+    quiz: {
+      question: 'Para que serve o AS no SQL?',
+      options: [
+        { text: 'Filtrar dados', isCorrect: false },
+        { text: 'Ordenar resultados', isCorrect: false },
+        { text: 'Dar um apelido (alias) a uma coluna ou tabela', isCorrect: true },
+        { text: 'Criar uma nova tabela', isCorrect: false },
+      ],
+      explanation: 'O AS renomeia uma coluna no resultado. preco * 0.9 AS preco_com_desconto mostra o cálculo com um nome legível.',
+    },
     initialCode: `-- Selecione o nome e o preço com 10% de desconto\nSELECT nome, preco * 0.9 AS ...\nFROM produtos;`,
     solution: `SELECT nome, preco * 0.9 AS preco_com_desconto FROM produtos`,
-    hint: 'Use preco * 0.9 AS preco_com_desconto (multiplicar por 0.9 é aplicar 10% de desconto)',
+    hint: 'Substitua ... pelo nome da coluna: preco_com_desconto. Multiplicar por 0.9 aplica 10% de desconto.',
   },
 ];
 
@@ -542,9 +644,19 @@ FROM produtos;
 
 > **Importante:** quando você usa uma função de agregação sem GROUP BY, ela retorna uma única linha com o resultado.
     `,
+    quiz: {
+      question: 'Qual função conta o número total de linhas?',
+      options: [
+        { text: 'SUM(*)', isCorrect: false },
+        { text: 'COUNT(*)', isCorrect: true },
+        { text: 'TOTAL(*)', isCorrect: false },
+        { text: 'AVG(*)', isCorrect: false },
+      ],
+      explanation: 'COUNT(*) conta o número de linhas. SUM soma valores numéricos. AVG calcula a média.',
+    },
     initialCode: `-- Descubra quantos clientes existem no total\nSELECT COUNT(*) AS total_clientes\nFROM ...`,
     solution: `SELECT COUNT(*) AS total_clientes FROM clientes`,
-    hint: 'Use COUNT(*) e faça o FROM da tabela clientes',
+    hint: 'Substitua ... pelo nome da tabela: clientes.',
   },
   {
     id: 'l-2-2',
@@ -598,9 +710,19 @@ SELECT cidade, COUNT(*) FROM clientes GROUP BY cidade;
 -- SELECT cidade, nome, COUNT(*) FROM clientes GROUP BY cidade;
 \`\`\`
     `,
+    quiz: {
+      question: 'O GROUP BY faz o quê?',
+      options: [
+        { text: 'Ordena os resultados', isCorrect: false },
+        { text: 'Divide linhas em grupos para aplicar agregações', isCorrect: true },
+        { text: 'Filtra linhas antes da consulta', isCorrect: false },
+        { text: 'Limita o número de resultados', isCorrect: false },
+      ],
+      explanation: 'O GROUP BY agrupa linhas com valores iguais. Combinado com COUNT(*), mostra a contagem por grupo.',
+    },
     initialCode: `-- Conte quantos clientes existem em cada cidade\nSELECT cidade, COUNT(*) AS total_clientes\nFROM clientes\nGROUP BY ...`,
     solution: `SELECT cidade, COUNT(*) AS total_clientes FROM clientes GROUP BY cidade`,
-    hint: 'Agrupe pela coluna cidade',
+    hint: 'Substitua ... pela coluna de agrupamento: cidade.',
   },
   {
     id: 'l-2-3',
@@ -653,9 +775,19 @@ GROUP BY cliente_id
 HAVING COUNT(*) > 1;
 \`\`\`
     `,
+    quiz: {
+      question: 'Qual a diferença entre WHERE e HAVING?',
+      options: [
+        { text: 'WHERE é mais rápido que HAVING', isCorrect: false },
+        { text: 'WHERE filtra antes do GROUP BY, HAVING filtra depois', isCorrect: true },
+        { text: 'HAVING só funciona com números', isCorrect: false },
+        { text: 'Não há diferença, são sinônimos', isCorrect: false },
+      ],
+      explanation: 'WHERE filtra linhas individuais ANTES do agrupamento. HAVING filtra grupos DEPOIS, podendo usar funções de agregação.',
+    },
     initialCode: `-- Mostre as categorias com mais de 2 produtos\nSELECT categoria, COUNT(*) AS total\nFROM produtos\nGROUP BY categoria\nHAVING ...`,
     solution: `SELECT categoria, COUNT(*) AS total FROM produtos GROUP BY categoria HAVING COUNT(*) > 2`,
-    hint: 'Use HAVING COUNT(*) > 2',
+    hint: 'Complete com: HAVING COUNT(*) > 2. Isso filtra apenas os grupos com mais de 2 itens.',
   },
   {
     id: 'l-2-4',
@@ -704,9 +836,19 @@ GROUP BY departamento
 ORDER BY media DESC;
 \`\`\`
     `,
+    quiz: {
+      question: 'Se você usa AVG(preco) e MAX(preco) no SELECT, o que DEVE aparecer no GROUP BY?',
+      options: [
+        { text: 'preco', isCorrect: false },
+        { text: 'Todas as colunas que NÃO estão em funções de agregação', isCorrect: true },
+        { text: 'AVG e MAX', isCorrect: false },
+        { text: 'Nada, o GROUP BY é opcional', isCorrect: false },
+      ],
+      explanation: 'Regra: toda coluna no SELECT que NÃO está dentro de uma agregação (AVG, MAX, etc.) deve estar no GROUP BY.',
+    },
     initialCode: `-- Preço médio, máximo e mínimo por categoria\nSELECT categoria,\n       AVG(preco) AS preco_medio,\n       MAX(preco) AS preco_maximo,\n       MIN(preco) AS preco_minimo\nFROM produtos\nGROUP BY ...`,
     solution: `SELECT categoria, AVG(preco) AS preco_medio, MAX(preco) AS preco_maximo, MIN(preco) AS preco_minimo FROM produtos GROUP BY categoria`,
-    hint: 'Agrupe por categoria e use AVG, MAX e MIN no preco',
+    hint: 'A coluna "categoria" está no SELECT mas não em uma agregação. Logo, deve ir no GROUP BY: GROUP BY categoria.',
   },
 ];
 
@@ -763,9 +905,19 @@ INNER JOIN clientes c ON p.cliente_id = c.id;
 
 > **Visualize:** o INNER JOIN é a intersecção de dois círculos em um diagrama de Venn — só mostra o que existe em ambos.
     `,
+    quiz: {
+      question: 'O que o INNER JOIN retorna?',
+      options: [
+        { text: 'Todas as linhas de ambas as tabelas', isCorrect: false },
+        { text: 'Apenas linhas com correspondência em AMBAS as tabelas', isCorrect: true },
+        { text: 'Todas da tabela da esquerda', isCorrect: false },
+        { text: 'Apenas linhas sem correspondência', isCorrect: false },
+      ],
+      explanation: 'O INNER JOIN retorna apenas as linhas que têm correspondência em ambas as tabelas. É a intersecção.',
+    },
     initialCode: `-- Liste os pedidos com o nome do cliente\nSELECT p.id, c.nome, p.valor_total\nFROM pedidos p\nINNER JOIN clientes c ON ...`,
     solution: `SELECT p.id, c.nome, p.valor_total FROM pedidos p INNER JOIN clientes c ON p.cliente_id = c.id`,
-    hint: 'A condição de junção é ON p.cliente_id = c.id',
+    hint: 'Complete a condição ON: p.cliente_id = c.id. Isso conecta cada pedido ao seu cliente.',
   },
   {
     id: 'l-3-2',
@@ -818,9 +970,19 @@ LEFT JOIN pedidos p ON c.id = p.cliente_id
 WHERE p.id IS NULL;
 \`\`\`
     `,
+    quiz: {
+      question: 'Qual a diferença principal entre INNER JOIN e LEFT JOIN?',
+      options: [
+        { text: 'LEFT JOIN é mais rápido', isCorrect: false },
+        { text: 'LEFT JOIN mantém TODAS as linhas da tabela da esquerda, mesmo sem correspondência', isCorrect: true },
+        { text: 'INNER JOIN retorna mais resultados', isCorrect: false },
+        { text: 'Não há diferença', isCorrect: false },
+      ],
+      explanation: 'LEFT JOIN mantém todos os registros da tabela da esquerda. Se não houver correspondência, os campos da direita ficam NULL.',
+    },
     initialCode: `-- Liste TODOS os clientes e quantos pedidos cada um fez\nSELECT c.nome, COUNT(p.id) AS total_pedidos\nFROM clientes c\nLEFT JOIN pedidos p ON ...\nGROUP BY c.nome`,
     solution: `SELECT c.nome, COUNT(p.id) AS total_pedidos FROM clientes c LEFT JOIN pedidos p ON c.id = p.cliente_id GROUP BY c.nome`,
-    hint: 'Use LEFT JOIN pedidos p ON c.id = p.cliente_id, e GROUP BY c.nome',
+    hint: 'Complete o ON com: c.id = p.cliente_id. O LEFT JOIN garante que clientes sem pedidos também apareçam.',
   },
   {
     id: 'l-3-3',
@@ -867,9 +1029,19 @@ pedidos (id) ← itens_pedido (pedido_id)
 produtos (id) ← itens_pedido (produto_id)
 \`\`\`
     `,
+    quiz: {
+      question: 'Para juntar 3 tabelas, quantos JOINs são necessários?',
+      options: [
+        { text: '1', isCorrect: false },
+        { text: '2', isCorrect: true },
+        { text: '3', isCorrect: false },
+        { text: 'Depende dos dados', isCorrect: false },
+      ],
+      explanation: 'Para N tabelas, você precisa de N-1 JOINs. 3 tabelas = 2 JOINs, 4 tabelas = 3 JOINs.',
+    },
     initialCode: `-- Liste itens mostrando o nome do produto e do cliente\nSELECT c.nome AS cliente,\n       pr.nome AS produto,\n       ip.quantidade,\n       ip.preco_unitario\nFROM itens_pedido ip\nINNER JOIN pedidos pe ON ip.pedido_id = pe.id\nINNER JOIN clientes c ON ...\nINNER JOIN produtos pr ON ...`,
     solution: `SELECT c.nome AS cliente, pr.nome AS produto, ip.quantidade, ip.preco_unitario FROM itens_pedido ip INNER JOIN pedidos pe ON ip.pedido_id = pe.id INNER JOIN clientes c ON pe.cliente_id = c.id INNER JOIN produtos pr ON ip.produto_id = pr.id`,
-    hint: 'Complete: clientes c ON pe.cliente_id = c.id e produtos pr ON ip.produto_id = pr.id',
+    hint: 'Complete as condições ON: clientes c ON pe.cliente_id = c.id e produtos pr ON ip.produto_id = pr.id.',
   },
   {
     id: 'l-3-4',
@@ -916,9 +1088,19 @@ ORDER BY AGREGACAO(metrica) DESC;
 
 Esse padrão se repete constantemente em análise de dados.
     `,
+    quiz: {
+      question: 'Ao combinar JOIN + GROUP BY, você agrupa por qual coluna?',
+      options: [
+        { text: 'Pela coluna da função de agregação (SUM, COUNT)', isCorrect: false },
+        { text: 'Pela coluna que identifica cada grupo (ex: nome do cliente)', isCorrect: true },
+        { text: 'Pela chave primária da tabela principal', isCorrect: false },
+        { text: 'Qualquer coluna serve', isCorrect: false },
+      ],
+      explanation: 'Agrupe pela dimensão que quer analisar. Para "total por cliente", agrupe por c.nome.',
+    },
     initialCode: `-- Total gasto por cada cliente\nSELECT c.nome, SUM(p.valor_total) AS total_gasto\nFROM clientes c\nINNER JOIN pedidos p ON c.id = p.cliente_id\nGROUP BY ...\nORDER BY total_gasto DESC`,
     solution: `SELECT c.nome, SUM(p.valor_total) AS total_gasto FROM clientes c INNER JOIN pedidos p ON c.id = p.cliente_id GROUP BY c.nome ORDER BY total_gasto DESC`,
-    hint: 'Use GROUP BY c.nome depois do JOIN',
+    hint: 'Complete com GROUP BY c.nome. Isso agrupa os pedidos por cliente e soma os valores.',
   },
 ];
 
@@ -980,9 +1162,19 @@ WHERE sub.total >= 2;
 - Filtrar com base em dados de outra tabela
 - Criar tabelas temporárias para queries complexas
     `,
+    quiz: {
+      question: 'O que é uma subquery?',
+      options: [
+        { text: 'Um tipo de JOIN', isCorrect: false },
+        { text: 'Uma query dentro de outra query', isCorrect: true },
+        { text: 'Uma função de agregação', isCorrect: false },
+        { text: 'Um alias para tabelas', isCorrect: false },
+      ],
+      explanation: 'Uma subquery é uma consulta dentro de outra. O banco executa a interna primeiro e usa o resultado na externa.',
+    },
     initialCode: `-- Produtos com preço acima da média\nSELECT nome, preco\nFROM produtos\nWHERE preco > (SELECT ... FROM produtos)`,
     solution: `SELECT nome, preco FROM produtos WHERE preco > (SELECT AVG(preco) FROM produtos)`,
-    hint: 'A subquery é: SELECT AVG(preco) FROM produtos',
+    hint: 'Dentro dos parênteses, calcule a média: SELECT AVG(preco) FROM produtos.',
   },
   {
     id: 'l-4-2',
@@ -1044,9 +1236,19 @@ JOIN CTE2 ON ...;
 - Quando você precisa reutilizar o mesmo "pedaço" de query
 - Para tornar a lógica passo-a-passo mais clara
     `,
+    quiz: {
+      question: 'Qual a principal vantagem de uma CTE sobre uma subquery?',
+      options: [
+        { text: 'É mais rápida', isCorrect: false },
+        { text: 'Torna a query mais legível, dando nome a partes complexas', isCorrect: true },
+        { text: 'Retorna mais resultados', isCorrect: false },
+        { text: 'Funciona com mais tabelas', isCorrect: false },
+      ],
+      explanation: 'CTEs são como dar um nome a uma subquery. A query fica mais organizada e fácil de entender.',
+    },
     initialCode: `-- Departamentos com salário médio acima de 5000\nWITH MediaSalarios AS (\n    SELECT departamento, AVG(salario) AS media\n    FROM funcionarios\n    GROUP BY departamento\n)\nSELECT *\nFROM MediaSalarios\nWHERE ...`,
     solution: `WITH MediaSalarios AS (SELECT departamento, AVG(salario) AS media FROM funcionarios GROUP BY departamento) SELECT * FROM MediaSalarios WHERE media > 5000`,
-    hint: 'Filtre WHERE media > 5000 na query principal',
+    hint: 'Complete o WHERE com: media > 5000. A CTE já calculou a média por departamento.',
   },
   {
     id: 'l-4-3',
@@ -1099,9 +1301,19 @@ FROM pedidos;
 - Transformar códigos em textos legíveis
 - Fazer contagens condicionais
     `,
+    quiz: {
+      question: 'O CASE WHEN no SQL é similar a qual estrutura de programação?',
+      options: [
+        { text: 'for/loop', isCorrect: false },
+        { text: 'if/else', isCorrect: true },
+        { text: 'try/catch', isCorrect: false },
+        { text: 'import/export', isCorrect: false },
+      ],
+      explanation: 'CASE WHEN funciona como if/else: verifica condições em ordem e retorna o valor do primeiro THEN que for verdadeiro.',
+    },
     initialCode: `-- Classifique os produtos por faixa de preço\nSELECT nome, preco,\n       CASE\n         WHEN preco <= 300 THEN 'Barato'\n         WHEN preco <= 1000 THEN 'Médio'\n         ELSE '...'\n       END AS faixa_preco\nFROM produtos`,
     solution: `SELECT nome, preco, CASE WHEN preco <= 300 THEN 'Barato' WHEN preco <= 1000 THEN 'Médio' ELSE 'Caro' END AS faixa_preco FROM produtos`,
-    hint: "Complete o ELSE com 'Caro'",
+    hint: "Substitua '...' por 'Caro'. Produtos acima de 1000 entram nessa faixa.",
   },
   {
     id: 'l-4-4',
@@ -1149,9 +1361,19 @@ WHERE pr.categoria = 'Eletrônicos';
 
 Ambas retornam o mesmo resultado. JOINs tendem a ser mais eficientes e legíveis, mas subqueries são mais intuitivas para iniciantes.
     `,
+    quiz: {
+      question: 'Qual palavra-chave garante que cada nome apareça apenas uma vez no resultado?',
+      options: [
+        { text: 'UNIQUE', isCorrect: false },
+        { text: 'LIMIT 1', isCorrect: false },
+        { text: 'DISTINCT', isCorrect: true },
+        { text: 'GROUP BY', isCorrect: false },
+      ],
+      explanation: 'DISTINCT remove duplicatas do resultado. Sem ele, um cliente que comprou 3 produtos eletrônicos apareceria 3 vezes.',
+    },
     initialCode: `-- Clientes que compraram produtos da categoria "Eletrônicos"\nSELECT DISTINCT c.nome\nFROM clientes c\nJOIN pedidos pe ON c.id = pe.cliente_id\nJOIN itens_pedido ip ON pe.id = ip.pedido_id\nJOIN produtos pr ON ip.produto_id = pr.id\nWHERE pr.categoria = '...'`,
     solution: `SELECT DISTINCT c.nome FROM clientes c JOIN pedidos pe ON c.id = pe.cliente_id JOIN itens_pedido ip ON pe.id = ip.pedido_id JOIN produtos pr ON ip.produto_id = pr.id WHERE pr.categoria = 'Eletrônicos'`,
-    hint: "Complete WHERE pr.categoria = 'Eletrônicos'",
+    hint: "Substitua '...' por 'Eletrônicos' (com aspas simples).",
   },
 ];
 
@@ -1200,9 +1422,19 @@ Esse tipo de relatório é pedido diariamente em empresas. Analistas de dados us
 - Decidir onde investir em marketing
 - Planejar estoque
     `,
+    quiz: {
+      question: 'Para calcular receita por item vendido, qual fórmula usar?',
+      options: [
+        { text: 'SUM(preco)', isCorrect: false },
+        { text: 'quantidade * preco_unitario', isCorrect: true },
+        { text: 'COUNT(*) * preco', isCorrect: false },
+        { text: 'AVG(valor_total)', isCorrect: false },
+      ],
+      explanation: 'A receita de cada item é quantidade * preco_unitario. Somamos com SUM() e agrupamos por categoria.',
+    },
     initialCode: `-- Faturamento total por categoria de produto\nSELECT pr.categoria,\n       SUM(ip.quantidade * ip.preco_unitario) AS faturamento_total\nFROM itens_pedido ip\nJOIN produtos pr ON ip.produto_id = pr.id\nGROUP BY ...\nORDER BY faturamento_total DESC`,
     solution: `SELECT pr.categoria, SUM(ip.quantidade * ip.preco_unitario) AS faturamento_total FROM itens_pedido ip JOIN produtos pr ON ip.produto_id = pr.id GROUP BY pr.categoria ORDER BY faturamento_total DESC`,
-    hint: 'Agrupe por pr.categoria',
+    hint: 'Complete com: GROUP BY pr.categoria. Isso agrupa o faturamento por categoria de produto.',
   },
   {
     id: 'l-5-2',
@@ -1246,9 +1478,19 @@ Esse tipo de consulta é a base de:
 
 > **No mundo real:** empresas como Amazon, iFood e Mercado Livre usam variações dessa query para personalizar ofertas e recompensas.
     `,
+    quiz: {
+      question: 'Para encontrar os "Top 5 clientes", qual combinação usar?',
+      options: [
+        { text: 'WHERE + LIMIT', isCorrect: false },
+        { text: 'ORDER BY DESC + LIMIT', isCorrect: true },
+        { text: 'GROUP BY + HAVING', isCorrect: false },
+        { text: 'MAX() + TOP', isCorrect: false },
+      ],
+      explanation: 'ORDER BY total_gasto DESC coloca o maior primeiro, e LIMIT 5 pega apenas os 5 primeiros.',
+    },
     initialCode: `-- Top 5 clientes que mais gastaram\nSELECT c.nome,\n       SUM(p.valor_total) AS total_gasto,\n       COUNT(p.id) AS qtd_pedidos\nFROM clientes c\nINNER JOIN pedidos p ON c.id = p.cliente_id\nGROUP BY c.nome\nORDER BY total_gasto DESC\nLIMIT ...`,
     solution: `SELECT c.nome, SUM(p.valor_total) AS total_gasto, COUNT(p.id) AS qtd_pedidos FROM clientes c INNER JOIN pedidos p ON c.id = p.cliente_id GROUP BY c.nome ORDER BY total_gasto DESC LIMIT 5`,
-    hint: 'Use LIMIT 5 no final',
+    hint: 'Substitua ... por 5. A query já está quase pronta!',
   },
   {
     id: 'l-5-3',
@@ -1293,9 +1535,19 @@ SELECT
 FROM pedidos;
 \`\`\`
     `,
+    quiz: {
+      question: 'Para criar um resumo de pedidos por status, qual coluna deve ir no GROUP BY?',
+      options: [
+        { text: 'valor_total', isCorrect: false },
+        { text: 'data_pedido', isCorrect: false },
+        { text: 'status', isCorrect: true },
+        { text: 'cliente_id', isCorrect: false },
+      ],
+      explanation: 'Agrupamos por status para ver quantos pedidos estão em cada estado (entregue, processando, cancelado).',
+    },
     initialCode: `-- Resumo de pedidos por status\nSELECT status,\n       COUNT(*) AS total_pedidos,\n       SUM(valor_total) AS valor_total\nFROM pedidos\nGROUP BY ...\nORDER BY total_pedidos DESC`,
     solution: `SELECT status, COUNT(*) AS total_pedidos, SUM(valor_total) AS valor_total FROM pedidos GROUP BY status ORDER BY total_pedidos DESC`,
-    hint: 'Agrupe por status',
+    hint: 'Complete com: GROUP BY status.',
   },
   {
     id: 'l-5-4',
@@ -1344,9 +1596,19 @@ FROM funcionarios
 GROUP BY departamento;
 \`\`\`
     `,
+    quiz: {
+      question: 'Para ordenar departamentos pelo custo (maior primeiro), qual usar?',
+      options: [
+        { text: 'ORDER BY departamento', isCorrect: false },
+        { text: 'ORDER BY folha_total DESC', isCorrect: true },
+        { text: 'ORDER BY COUNT(*)', isCorrect: false },
+        { text: 'HAVING folha_total > 0', isCorrect: false },
+      ],
+      explanation: 'ORDER BY folha_total DESC ordena pelo total de salários do maior para o menor.',
+    },
     initialCode: `-- Folha de pagamento por departamento\nSELECT departamento,\n       COUNT(*) AS qtd_funcionarios,\n       SUM(salario) AS folha_total\nFROM funcionarios\nGROUP BY departamento\nORDER BY ... DESC`,
     solution: `SELECT departamento, COUNT(*) AS qtd_funcionarios, SUM(salario) AS folha_total FROM funcionarios GROUP BY departamento ORDER BY folha_total DESC`,
-    hint: 'Ordene por folha_total DESC',
+    hint: 'Substitua ... por folha_total. Isso ordena do departamento mais caro ao mais barato.',
   },
 ];
 
@@ -1405,9 +1667,19 @@ FROM produtos;
 
 Isso dá um ranking separado por categoria: o mais caro de Eletrônicos é #1, o mais caro de Acessórios é #1, etc.
     `,
+    quiz: {
+      question: 'Qual a principal diferença entre GROUP BY e Window Functions?',
+      options: [
+        { text: 'Window Functions são mais lentas', isCorrect: false },
+        { text: 'GROUP BY mantém todas as linhas', isCorrect: false },
+        { text: 'Window Functions mantêm o detalhe de cada linha', isCorrect: true },
+        { text: 'Não há diferença', isCorrect: false },
+      ],
+      explanation: 'GROUP BY colapsa linhas em grupos. Window Functions calculam sobre um grupo mas mantêm cada linha individual visível.',
+    },
     initialCode: `-- Ranking de produtos por preço (mais caro primeiro)\nSELECT nome, preco,\n       ROW_NUMBER() OVER (ORDER BY ... ) AS ranking\nFROM produtos`,
     solution: `SELECT nome, preco, ROW_NUMBER() OVER (ORDER BY preco DESC) AS ranking FROM produtos`,
-    hint: 'Use ORDER BY preco DESC dentro do OVER()',
+    hint: 'Complete o ORDER BY dentro do OVER(): preco DESC.',
   },
   {
     id: 'l-6-2',
@@ -1461,9 +1733,19 @@ SELECT * FROM (
 WHERE rank <= 2;
 \`\`\`
     `,
+    quiz: {
+      question: 'Se dois funcionários ganham R$6500, qual função dá o ranking 1, 2, 3, 3, 4 (sem pular)?',
+      options: [
+        { text: 'ROW_NUMBER()', isCorrect: false },
+        { text: 'RANK()', isCorrect: false },
+        { text: 'DENSE_RANK()', isCorrect: true },
+        { text: 'COUNT()', isCorrect: false },
+      ],
+      explanation: 'DENSE_RANK() não pula posições em empates. RANK() pula (1,2,3,3,5). ROW_NUMBER() nunca empata (1,2,3,4,5).',
+    },
     initialCode: `-- Ranking dos funcionários por salário com DENSE_RANK\nSELECT nome, salario,\n       DENSE_RANK() OVER (ORDER BY ... ) AS ranking\nFROM funcionarios`,
     solution: `SELECT nome, salario, DENSE_RANK() OVER (ORDER BY salario DESC) AS ranking FROM funcionarios`,
-    hint: 'Use DENSE_RANK() OVER (ORDER BY salario DESC)',
+    hint: 'Complete o ORDER BY dentro do OVER(): salario DESC.',
   },
   {
     id: 'l-6-3',
@@ -1511,9 +1793,19 @@ SUM(valor_total) OVER (ORDER BY data_pedido)
 SUM(valor_total) OVER (PARTITION BY cliente_id ORDER BY data_pedido)
 \`\`\`
     `,
+    quiz: {
+      question: 'O que um SUM() com OVER(ORDER BY data) produz?',
+      options: [
+        { text: 'A soma total de todos os valores', isCorrect: false },
+        { text: 'A soma acumulada linha a linha (running total)', isCorrect: true },
+        { text: 'A média acumulada', isCorrect: false },
+        { text: 'O maior valor até a data', isCorrect: false },
+      ],
+      explanation: 'SUM() com OVER(ORDER BY) calcula um total acumulado: cada linha mostra a soma de todas as anteriores até ela.',
+    },
     initialCode: `-- Pedidos entregues com total acumulado\nSELECT id, data_pedido, valor_total,\n       SUM(valor_total) OVER (ORDER BY ...) AS total_acumulado\nFROM pedidos\nWHERE status = 'entregue'`,
     solution: `SELECT id, data_pedido, valor_total, SUM(valor_total) OVER (ORDER BY data_pedido) AS total_acumulado FROM pedidos WHERE status = 'entregue'`,
-    hint: 'Use SUM(valor_total) OVER (ORDER BY data_pedido)',
+    hint: 'Complete o ORDER BY dentro do OVER(): data_pedido. Isso ordena o acumulado por data.',
   },
 ];
 
