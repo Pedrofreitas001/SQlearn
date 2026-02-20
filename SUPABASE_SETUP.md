@@ -121,8 +121,8 @@ CREATE TABLE funcionarios (
 4. Crie um arquivo `.env.local` na raiz do projeto com as variáveis:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima
+VITE_SUPABASE_URL=sua_url_do_supabase
+VITE_SUPABASE_ANON_KEY=sua_chave_anonima
 ```
 
 5. Reinicie o servidor de desenvolvimento. O aplicativo detectará automaticamente as variáveis e mudará para o modo Supabase.

@@ -26,8 +26,8 @@ Se você quiser usar Supabase em produção:
 
 1. Vá para as configurações do projeto no Vercel
 2. Adicione as seguintes variáveis:
-   - `NEXT_PUBLIC_SUPABASE_URL`: sua URL do Supabase
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: sua chave pública do Supabase
+   - `VITE_SUPABASE_URL`: sua URL do Supabase
+   - `VITE_SUPABASE_ANON_KEY`: sua chave pública do Supabase
 
 > **Nota**: O app funciona perfeitamente sem essas variáveis, usando um banco de dados em memória (demo mode). Para dados persistentes, configure o Supabase.
 
