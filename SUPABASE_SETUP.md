@@ -1,8 +1,27 @@
 # Configuração do Supabase
 
-Este projeto está configurado para funcionar em dois modos:
-1. **Modo Demonstração (Padrão):** Usa um banco de dados em memória (AlaSQL) e autenticação simulada.
-2. **Modo Produção:** Usa Supabase para autenticação e banco de dados PostgreSQL.
+## ⚠️ Importante
+
+Este projeto **funciona perfeitamente sem Supabase**. O banco de dados padrão é em memória (AlaSQL) e totalmente funcional para fins de aprendizado. Supabase é opcional e recomendado apenas para:
+
+- ✅ Dados persistentes entre sessões
+- ✅ Múltiplos usuários
+- ✅ Autenticação OAuth (GitHub)
+- ✅ Produção com escala
+
+## Modos de Operação
+
+1. **Modo Demonstração (Padrão)** ⭐
+   - Banco de dados: AlaSQL em memória
+   - Autenticação: Simulada (sem login OAuth)
+   - Dados: Salvos no localStorage do navegador
+   - Ideal para: Aprendizado local, testes, desenvolvimento
+
+2. **Modo Supabase (Opcional)**
+   - Banco de dados: PostgreSQL na nuvem
+   - Autenticação: OAuth com GitHub
+   - Dados: Persistentes no servidor
+   - Ideal para: Multi-usuário, produção
 
 ## Para ativar o Supabase:
 
@@ -107,3 +126,39 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima
 ```
 
 5. Reinicie o servidor de desenvolvimento. O aplicativo detectará automaticamente as variáveis e mudará para o modo Supabase.
+
+## Variáveis de Ambiente
+
+```env
+# .env.local ou .env.production
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+Obtenha estas variáveis em:
+- **VITE_SUPABASE_URL**: Configurações do Projeto → API → URL
+- **VITE_SUPABASE_ANON_KEY**: Configurações do Projeto → API → anon (public) key
+
+## Troubleshooting
+
+### "Cannot find module '@supabase/supabase-js'"
+```bash
+npm install @supabase/supabase-js
+```
+
+### Variáveis não estão sendo lidas
+1. Adicione `VITE_` antes do nome da variável (.env)
+2. Reinicie o servidor (`npm run dev`)
+3. Verifique em `console.log(import.meta.env.VITE_SUPABASE_URL)`
+
+### OAuth GitHub não funciona
+1. Vá para Settings → Authentication no Supabase
+2. Habilite GitHub Provider
+3. Copie a URL de callback
+4. Configure em GitHub Settings → Developer settings → OAuth Apps
+
+## Próximas Passos
+
+1. Deploy na Vercel (veja [DEPLOY.md](DEPLOY.md))
+2. Configure domínio personalizado
+3. Monitore usage no Supabase Dashboard
