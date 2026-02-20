@@ -42,8 +42,11 @@ export function ModuleCard({ module, progress, isLocked }: ModuleCardProps) {
         )}
       </div>
 
-      <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">{module.title}</h3>
-      <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2">{module.description}</p>
+      <h3 className="font-bold text-base text-slate-900 dark:text-white mb-1">{module.title}</h3>
+      <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">{module.description}</p>
+      <p className="text-[10px] text-slate-400 dark:text-slate-500 mb-4">
+        {module.lessons.length} lições · {module.level}
+      </p>
 
       <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5 mb-4">
         <div 
