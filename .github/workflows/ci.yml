@@ -21,13 +21,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          # No npm cache — @tailwindcss/oxide is a platform-specific Rust
+          # native binary. Caching across OSes causes "Cannot find native
+          # binding" errors. A clean install is required on each run.
 
-      - name: Install dependencies
-        # Remove lock file before install so npm resolves the correct
-        # platform-specific native binaries (@tailwindcss/oxide / Rust).
-        # The lock file generated on macOS/Windows misses Linux binaries.
-        run: rm -f package-lock.json && npm install
+      - name: Clean install (force platform-specific native binaries)
+        # @tailwindcss/oxide ships Linux/macOS/Windows binaries as optional
+        # deps. npm ci or a cached install can pick up the wrong OS binary.
+        # Wiping both the npm cache and lock file forces npm to download the
+        # correct linux-x64 binary for this runner.
+        run: |
+          npm cache clean --force
+          rm -f package-lock.json
+          npm install
 
       - name: Type check
         run: npm run lint
