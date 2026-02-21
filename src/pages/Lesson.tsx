@@ -244,12 +244,12 @@ export function Lesson() {
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 overflow-hidden">
+    <div className="flex flex-col h-screen bg-blue-50/30 dark:bg-slate-900 text-slate-900 dark:text-slate-100 overflow-hidden">
       {/* Star celebration animation */}
       <StarAnimation trigger={showStars} onComplete={() => setShowStars(false)} />
 
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 h-14 shrink-0 z-20">
+      <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border-b border-blue-100 dark:border-slate-700 h-14 shrink-0 z-20">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/')}

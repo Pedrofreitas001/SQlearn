@@ -98,8 +98,8 @@ export function Content() {
         {/* Header */}
         <header className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 bg-violet-100 dark:bg-violet-900/30 rounded-xl">
-              <BookOpen className="text-violet-600 dark:text-violet-400" size={24} />
+            <div className="p-2.5 bg-blue-100 dark:bg-violet-900/30 rounded-xl">
+              <BookOpen className="text-blue-600 dark:text-violet-400" size={24} />
             </div>
             <div>
               <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
@@ -119,7 +119,7 @@ export function Content() {
               placeholder="Buscar no conteúdo..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 dark:focus:border-violet-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
+              className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:focus:ring-violet-500/30 focus:border-blue-400 dark:focus:border-violet-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm"
             />
           </div>
         </header>
@@ -139,7 +139,7 @@ export function Content() {
                   "bg-white dark:bg-slate-800 rounded-2xl border overflow-hidden transition-all",
                   locked
                     ? "border-slate-200 dark:border-slate-700 opacity-60"
-                    : "border-slate-200 dark:border-slate-700 shadow-sm"
+                    : "border-blue-100 dark:border-slate-700 shadow-md dark:shadow-sm"
                 )}
               >
                 {/* Module Header */}
@@ -152,14 +152,14 @@ export function Content() {
                   disabled={locked}
                   className={clsx(
                     "w-full flex items-center gap-4 p-5 text-left transition-colors",
-                    !locked && "hover:bg-slate-50 dark:hover:bg-slate-700/30"
+                    !locked && "hover:bg-blue-50/30 dark:hover:bg-slate-700/30"
                   )}
                 >
                   <div className={clsx(
                     "p-2.5 rounded-xl shrink-0",
                     locked
                       ? "bg-slate-100 dark:bg-slate-700 text-slate-400"
-                      : "bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400"
+                      : "bg-blue-50 dark:bg-violet-900/20 text-blue-600 dark:text-violet-400"
                   )}>
                     {locked ? <Lock size={20} /> : <IconComponent size={20} />}
                   </div>

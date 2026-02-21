@@ -77,9 +77,9 @@ export function Dashboard() {
                 <span className="font-bold text-sm text-orange-700 dark:text-orange-300">{streak} {streak === 1 ? 'dia' : 'dias'}</span>
               </div>
             )}
-            <div className="flex items-center bg-violet-50 dark:bg-violet-900/20 rounded-full px-4 py-2 border border-violet-200 dark:border-violet-800 shadow-sm">
-              <Sparkles className="text-violet-500 mr-2" size={18} />
-              <span className="font-bold text-sm text-violet-700 dark:text-violet-300">{xp} XP</span>
+            <div className="flex items-center bg-blue-50 dark:bg-violet-900/20 rounded-full px-4 py-2 border border-blue-200 dark:border-violet-800 shadow-sm">
+              <Sparkles className="text-blue-500 dark:text-violet-500 mr-2" size={18} />
+              <span className="font-bold text-sm text-blue-700 dark:text-violet-300">{xp} XP</span>
             </div>
           </div>
         </header>
@@ -87,34 +87,34 @@ export function Dashboard() {
         {/* Stats Overview */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Level Card */}
-          <div className="md:col-span-2 bg-gradient-to-br from-violet-50 via-indigo-50 to-purple-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800 rounded-2xl p-6 md:p-8 shadow-sm border border-violet-100 dark:border-slate-700 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-72 h-72 bg-violet-200/30 dark:bg-violet-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-200/20 dark:bg-indigo-500/5 rounded-full blur-3xl -ml-12 -mb-12 pointer-events-none" />
+          <div className="md:col-span-2 bg-gradient-to-br from-blue-50 via-indigo-50 to-sky-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800 rounded-2xl p-6 md:p-8 shadow-md dark:shadow-sm border border-blue-200/80 dark:border-slate-700 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-blue-200/30 dark:bg-violet-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-200/30 dark:bg-indigo-500/5 rounded-full blur-3xl -ml-12 -mb-12 pointer-events-none" />
 
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <p className="text-violet-500 dark:text-violet-400 font-semibold mb-1 flex items-center gap-2 text-sm">
+                  <p className="text-blue-600 dark:text-violet-400 font-semibold mb-1 flex items-center gap-2 text-sm">
                     <Trophy size={16} />
                     Nível Atual
                   </p>
                   <h3 className="text-3xl md:text-4xl font-black tracking-tight text-slate-800 dark:text-white">Nível {level}</h3>
-                  <p className="text-violet-400 dark:text-violet-300 text-sm mt-1 font-medium">{levelTitle}</p>
+                  <p className="text-blue-500 dark:text-violet-300 text-sm mt-1 font-medium">{levelTitle}</p>
                 </div>
-                <div className="bg-white/70 dark:bg-slate-700/70 backdrop-blur-md rounded-xl px-5 py-3 border border-violet-100 dark:border-slate-600 text-right shadow-sm">
+                <div className="bg-white/80 dark:bg-slate-700/70 backdrop-blur-md rounded-xl px-5 py-3 border border-blue-100 dark:border-slate-600 text-right shadow-sm">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Progresso Geral</span>
-                  <p className="font-black text-slate-800 dark:text-white text-xl">{overallProgress}%</p>
+                  <p className="font-black text-blue-700 dark:text-white text-xl">{overallProgress}%</p>
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between text-sm font-semibold mb-2">
                   <span className="text-slate-600 dark:text-slate-300">Progresso para o Nível {level + 1}</span>
-                  <span className="text-violet-600 dark:text-violet-400">{Math.round(progressToNextLevel)}%</span>
+                  <span className="text-blue-600 dark:text-violet-400">{Math.round(progressToNextLevel)}%</span>
                 </div>
-                <div className="w-full bg-violet-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+                <div className="w-full bg-blue-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-violet-400 to-indigo-500 dark:from-violet-500 dark:to-indigo-400 h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
+                    className="bg-gradient-to-r from-blue-400 to-indigo-500 dark:from-violet-500 dark:to-indigo-400 h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
                     style={{ width: `${progressToNextLevel}%` }}
                   />
                 </div>
@@ -126,7 +126,7 @@ export function Dashboard() {
           </div>
 
           {/* Achievements Card */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-blue-100 dark:border-slate-700 shadow-md dark:shadow-sm flex flex-col">
             <h3 className="font-bold text-base mb-4 text-slate-900 dark:text-white flex items-center gap-2">
               <Award className="text-amber-500" size={18} />
               Conquistas ({achievements.length}/12)
@@ -162,9 +162,10 @@ export function Dashboard() {
         <section id="modules">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span className="w-1 h-5 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full dark:hidden"></span>
               Trilha de Aprendizado
             </h2>
-            <span className="text-xs text-slate-400 dark:text-slate-500">
+            <span className="text-xs text-blue-500 dark:text-slate-500 font-medium bg-blue-50 dark:bg-transparent px-2.5 py-1 rounded-full border border-blue-100 dark:border-transparent">
               {curriculum.length} módulos · {totalLessons} lições
             </span>
           </div>

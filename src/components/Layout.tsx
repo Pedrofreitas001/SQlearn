@@ -36,10 +36,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans">
+    <div className="flex h-screen bg-blue-50/40 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans">
       {/* Mobile Menu Button */}
       <button
-        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700"
+        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-blue-100 dark:border-slate-700"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
         {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -47,16 +47,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar */}
       <aside className={clsx(
-        "fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:flex md:flex-col shadow-sm",
+        "fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-slate-800 border-r border-blue-100 dark:border-slate-700 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:flex md:flex-col shadow-sm",
         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Logo */}
-        <div className="p-5 flex items-center gap-3 border-b border-slate-100 dark:border-slate-700">
-          <div className="bg-gradient-to-br from-violet-500 to-indigo-600 p-2.5 rounded-xl text-white shadow-lg shadow-violet-500/20">
+        <div className="p-5 flex items-center gap-3 border-b border-blue-50 dark:border-slate-700">
+          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-500/25">
             <Database size={20} />
           </div>
           <div>
-            <h1 className="font-extrabold text-lg leading-tight bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">SQLearn</h1>
+            <h1 className="font-extrabold text-lg leading-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">SQLearn</h1>
             <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Aprenda SQL na prática</p>
           </div>
         </div>
@@ -71,8 +71,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
               className={clsx(
                 "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all text-sm",
                 location.pathname === item.href
-                  ? "bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400 font-semibold shadow-sm"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-800 dark:hover:text-slate-200"
+                  ? "bg-blue-50 dark:bg-violet-900/20 text-blue-700 dark:text-violet-400 font-semibold shadow-sm border border-blue-100 dark:border-transparent"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-blue-50/50 dark:hover:bg-slate-700/50 hover:text-slate-800 dark:hover:text-slate-200"
               )}
             >
               <item.icon size={18} strokeWidth={location.pathname === item.href ? 2.5 : 2} />
@@ -95,33 +95,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Theme toggle + User card */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-700 space-y-3">
+        <div className="p-4 border-t border-blue-50 dark:border-slate-700 space-y-3">
           {/* Quick theme toggle */}
           <button
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            className="flex items-center gap-2 w-full px-3 py-2 text-xs text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
+            className="flex items-center gap-2 w-full px-3 py-2 text-xs text-slate-500 dark:text-slate-400 hover:bg-blue-50/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
           >
             {isDark ? <Sun size={14} /> : <Moon size={14} />}
             <span>{isDark ? 'Modo Claro' : 'Modo Escuro'}</span>
           </button>
 
           {user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-50/50 dark:bg-transparent border border-blue-100/50 dark:border-transparent">
               <img
-                src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=7c3aed&color=fff`}
+                src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=3b82f6&color=fff`}
                 alt={user.name}
-                className="w-10 h-10 rounded-full border-2 border-violet-100 dark:border-slate-600 shadow-sm"
+                className="w-10 h-10 rounded-full border-2 border-blue-200 dark:border-slate-600 shadow-sm"
               />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold truncate">{user.name}</p>
                 <div className="flex items-center gap-1 text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                  <Sparkles size={10} className="text-violet-500 shrink-0" />
+                  <Sparkles size={10} className="text-blue-500 dark:text-violet-500 shrink-0" />
                   <span>Nível {level} · {xp} XP</span>
                 </div>
               </div>
             </div>
           ) : (
-            <Link to="/login" className="block w-full py-2 px-4 bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-center rounded-lg font-semibold hover:from-violet-600 hover:to-indigo-600 transition-all text-sm shadow-lg shadow-violet-500/20">
+            <Link to="/login" className="block w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-center rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all text-sm shadow-lg shadow-blue-500/20">
               Entrar
             </Link>
           )}

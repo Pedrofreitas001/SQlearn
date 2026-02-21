@@ -16,17 +16,17 @@ export function Settings() {
 
         <div className="space-y-6">
           {/* Profile Section */}
-          <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-md dark:shadow-sm border border-blue-100 dark:border-slate-700">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-              <User size={20} className="text-violet-500" />
+              <User size={20} className="text-blue-500 dark:text-violet-500" />
               Perfil
             </h2>
-            
+
             <div className="flex items-center gap-4 mb-6">
-              <img 
-                src={user?.avatar_url || `https://ui-avatars.com/api/?name=${user?.name}&background=7c3aed&color=fff`}
+              <img
+                src={user?.avatar_url || `https://ui-avatars.com/api/?name=${user?.name}&background=3b82f6&color=fff`}
                 alt={user?.name}
-                className="w-16 h-16 rounded-full border-2 border-violet-100 dark:border-slate-600 shadow-sm"
+                className="w-16 h-16 rounded-full border-2 border-blue-100 dark:border-slate-600 shadow-sm"
               />
               <div>
                 <p className="font-bold text-lg text-slate-900 dark:text-white">{user?.name}</p>
@@ -34,8 +34,8 @@ export function Settings() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
-              <button 
+            <div className="pt-4 border-t border-blue-50 dark:border-slate-700">
+              <button
                 onClick={signOut}
                 className="text-red-500 hover:text-red-600 font-medium flex items-center gap-2 transition-colors"
               >
@@ -46,46 +46,46 @@ export function Settings() {
           </section>
 
           {/* Appearance Section */}
-          <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-md dark:shadow-sm border border-blue-100 dark:border-slate-700">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-              <Sparkles size={20} className="text-violet-500" />
+              <Sparkles size={20} className="text-blue-500 dark:text-violet-500" />
               Aparência
             </h2>
-            
+
             <div className="grid grid-cols-3 gap-3">
               <button
                 onClick={() => setTheme('light')}
                 className={clsx(
                   "flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all",
-                  theme === 'light' 
-                    ? "border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 shadow-sm"
-                    : "border-slate-200 dark:border-slate-700 hover:border-violet-200 dark:hover:border-slate-600 text-slate-500 dark:text-slate-400"
+                  theme === 'light'
+                    ? "border-blue-500 dark:border-violet-500 bg-blue-50 dark:bg-violet-900/20 text-blue-600 dark:text-violet-400 shadow-sm"
+                    : "border-slate-200 dark:border-slate-700 hover:border-blue-200 dark:hover:border-slate-600 text-slate-500 dark:text-slate-400"
                 )}
               >
                 <Sun size={24} />
                 <span className="text-sm font-medium">Claro</span>
               </button>
-              
+
               <button
                 onClick={() => setTheme('dark')}
                 className={clsx(
                   "flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all",
-                  theme === 'dark' 
-                    ? "border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 shadow-sm"
-                    : "border-slate-200 dark:border-slate-700 hover:border-violet-200 dark:hover:border-slate-600 text-slate-500 dark:text-slate-400"
+                  theme === 'dark'
+                    ? "border-blue-500 dark:border-violet-500 bg-blue-50 dark:bg-violet-900/20 text-blue-600 dark:text-violet-400 shadow-sm"
+                    : "border-slate-200 dark:border-slate-700 hover:border-blue-200 dark:hover:border-slate-600 text-slate-500 dark:text-slate-400"
                 )}
               >
                 <Moon size={24} />
                 <span className="text-sm font-medium">Escuro</span>
               </button>
-              
+
               <button
                 onClick={() => setTheme('system')}
                 className={clsx(
                   "flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all",
-                  theme === 'system' 
-                    ? "border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 shadow-sm"
-                    : "border-slate-200 dark:border-slate-700 hover:border-violet-200 dark:hover:border-slate-600 text-slate-500 dark:text-slate-400"
+                  theme === 'system'
+                    ? "border-blue-500 dark:border-violet-500 bg-blue-50 dark:bg-violet-900/20 text-blue-600 dark:text-violet-400 shadow-sm"
+                    : "border-slate-200 dark:border-slate-700 hover:border-blue-200 dark:hover:border-slate-600 text-slate-500 dark:text-slate-400"
                 )}
               >
                 <Monitor size={24} />
@@ -95,19 +95,19 @@ export function Settings() {
           </section>
 
           {/* Privacy/Data Section */}
-          <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-md dark:shadow-sm border border-blue-100 dark:border-slate-700">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-              <Shield size={20} className="text-violet-500" />
+              <Shield size={20} className="text-blue-500 dark:text-violet-500" />
               Privacidade
             </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
               Seus dados de progresso são salvos localmente neste navegador (modo demonstração).
             </p>
             <div className="flex gap-3">
               <button disabled className="text-slate-400 text-sm font-medium cursor-not-allowed">
                 Gerenciar dados (Em breve)
               </button>
-              <button 
+              <button
                 onClick={() => {
                   if (confirm('Tem certeza? Isso apagará todo o seu progresso.')) {
                     localStorage.removeItem('sql-academy-xp');

@@ -61,7 +61,7 @@ export function Leaderboard() {
           </p>
         </header>
 
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md dark:shadow-sm border border-blue-100 dark:border-slate-700 overflow-hidden">
           {/* Top 3 Podium (Visual) - Optional, maybe for later. Let's stick to a list first. */}
           
           <div className="divide-y divide-slate-100 dark:divide-slate-700">
@@ -73,7 +73,7 @@ export function Leaderboard() {
                   key={u.id} 
                   className={clsx(
                     "flex items-center gap-4 p-4 transition-colors",
-                    isCurrentUser ? "bg-violet-50 dark:bg-violet-900/20" : "hover:bg-slate-50 dark:hover:bg-slate-700/30"
+                    isCurrentUser ? "bg-blue-50 dark:bg-violet-900/20" : "hover:bg-blue-50/30 dark:hover:bg-slate-700/30"
                   )}
                 >
                   <div className="w-8 text-center font-bold text-slate-500 dark:text-slate-400">
@@ -90,7 +90,7 @@ export function Leaderboard() {
                   />
                   
                   <div className="flex-1 min-w-0">
-                    <p className={clsx("font-bold truncate", isCurrentUser ? "text-violet-700 dark:text-violet-400" : "text-slate-900 dark:text-white")}>
+                    <p className={clsx("font-bold truncate", isCurrentUser ? "text-blue-700 dark:text-violet-400" : "text-slate-900 dark:text-white")}>
                       {u.name} {isCurrentUser && "(Você)"}
                     </p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">Nível {u.level}</p>
