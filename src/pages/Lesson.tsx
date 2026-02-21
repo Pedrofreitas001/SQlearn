@@ -222,7 +222,7 @@ export function Lesson() {
       )
     },
     pre: ({node, ...props}: any) => (
-      <pre className="bg-slate-900 text-slate-50 p-3 rounded-xl overflow-x-auto mb-4 border border-slate-800 text-xs leading-relaxed" {...props} />
+      <pre className="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-50 p-3 rounded-xl overflow-x-auto mb-4 border border-slate-200 dark:border-slate-800 text-xs leading-relaxed" {...props} />
     ),
     ul: ({node, ...props}: any) => <ul className="list-disc list-outside ml-5 space-y-1 text-slate-600 dark:text-slate-300 mb-3 text-sm" {...props} />,
     ol: ({node, ...props}: any) => <ol className="list-decimal list-outside ml-5 space-y-1 text-slate-600 dark:text-slate-300 mb-3 text-sm" {...props} />,
