@@ -7,6 +7,7 @@ import { Lesson } from '@/pages/Lesson';
 import { Login } from '@/pages/Login';
 import { Leaderboard } from '@/pages/Leaderboard';
 import { Settings } from '@/pages/Settings';
+import { Content } from '@/pages/Content';
 
 import { ModuleRedirect } from '@/components/ModuleRedirect';
 
@@ -14,8 +15,11 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   
   if (loading) {
-    return <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-slate-900 text-slate-500">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    return <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="flex flex-col items-center gap-3">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-violet-200 border-t-violet-600"></div>
+        <span className="text-sm text-slate-400 font-medium">Carregando...</span>
+      </div>
     </div>;
   }
   
@@ -27,7 +31,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 export default function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <AuthProvider>
           <GamificationProvider>
             <Routes>
@@ -51,6 +55,12 @@ export default function App() {
                 </PrivateRoute>
               } />
               
+              <Route path="/content" element={
+                <PrivateRoute>
+                  <Content />
+                </PrivateRoute>
+              } />
+
               <Route path="/module/:moduleId/lesson/:lessonId" element={
                 <PrivateRoute>
                   <Lesson />

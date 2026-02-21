@@ -4,7 +4,27 @@ import { useGamification } from '@/contexts/GamificationContext';
 import { curriculum } from '@/data/curriculum';
 import { ModuleCard } from '@/components/ModuleCard';
 import { Layout } from '@/components/Layout';
-import { Flame, Star, Trophy, Target } from 'lucide-react';
+import {
+  Flame, Star, Trophy, Target, Sparkles,
+  Search, CheckCircle, Sigma, GitMerge, Zap,
+  Briefcase, PanelTop, Flag, GraduationCap, Award,
+} from 'lucide-react';
+
+// Map achievement icon strings to Lucide components
+const ACHIEVEMENT_ICONS: Record<string, React.ElementType> = {
+  'search': Search,
+  'check_circle': CheckCircle,
+  'functions': Sigma,
+  'merge': GitMerge,
+  'bolt': Zap,
+  'business_center': Briefcase,
+  'window': PanelTop,
+  'flag': Flag,
+  'school': GraduationCap,
+  'local_fire_department': Flame,
+  'whatshot': Flame,
+  'star': Star,
+};
 
 export function Dashboard() {
   const { user } = useAuth();
@@ -52,13 +72,13 @@ export function Dashboard() {
 
           <div className="flex items-center gap-3">
             {streak > 0 && (
-              <div className="flex items-center bg-orange-50 dark:bg-orange-900/20 rounded-full px-4 py-2 border border-orange-200 dark:border-orange-800">
+              <div className="flex items-center bg-gradient-to-r from-orange-50 to-amber-50 dark:bg-orange-900/20 rounded-full px-4 py-2 border border-orange-200 dark:border-orange-800 shadow-sm">
                 <Flame className="text-orange-500 mr-2" size={18} />
                 <span className="font-bold text-sm text-orange-700 dark:text-orange-300">{streak} {streak === 1 ? 'dia' : 'dias'}</span>
               </div>
             )}
-            <div className="flex items-center bg-violet-50 dark:bg-violet-900/20 rounded-full px-4 py-2 border border-violet-200 dark:border-violet-800">
-              <Star className="text-violet-500 mr-2" size={18} />
+            <div className="flex items-center bg-violet-50 dark:bg-violet-900/20 rounded-full px-4 py-2 border border-violet-200 dark:border-violet-800 shadow-sm">
+              <Sparkles className="text-violet-500 mr-2" size={18} />
               <span className="font-bold text-sm text-violet-700 dark:text-violet-300">{xp} XP</span>
             </div>
           </div>
@@ -82,7 +102,7 @@ export function Dashboard() {
                   <p className="text-violet-400 dark:text-violet-300 text-sm mt-1 font-medium">{levelTitle}</p>
                 </div>
                 <div className="bg-white/70 dark:bg-slate-700/70 backdrop-blur-md rounded-xl px-5 py-3 border border-violet-100 dark:border-slate-600 text-right shadow-sm">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">Progresso Geral</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Progresso Geral</span>
                   <p className="font-black text-slate-800 dark:text-white text-xl">{overallProgress}%</p>
                 </div>
               </div>
@@ -108,7 +128,7 @@ export function Dashboard() {
           {/* Achievements Card */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col">
             <h3 className="font-bold text-base mb-4 text-slate-900 dark:text-white flex items-center gap-2">
-              <Star className="text-yellow-500" size={18} />
+              <Award className="text-amber-500" size={18} />
               Conquistas ({achievements.length}/12)
             </h3>
 
@@ -118,18 +138,21 @@ export function Dashboard() {
                 <p className="text-sm text-slate-400 dark:text-slate-500">Complete lições para desbloquear conquistas</p>
               </div>
             ) : (
-              <div className="space-y-3 flex-1 overflow-y-auto pr-1">
-                {achievements.slice(-4).reverse().map((ach) => (
-                  <div key={ach.id} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50">
-                    <div className="w-9 h-9 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-400 shrink-0">
-                      <span className="material-symbols-outlined text-lg">{ach.icon}</span>
+              <div className="space-y-2.5 flex-1 overflow-y-auto pr-1">
+                {achievements.slice(-4).reverse().map((ach) => {
+                  const AchIcon = ACHIEVEMENT_ICONS[ach.icon] || Star;
+                  return (
+                    <div key={ach.id} className="flex items-center gap-3 p-2.5 rounded-xl bg-gradient-to-r from-amber-50/80 to-yellow-50/80 dark:from-slate-700/50 dark:to-slate-700/50 border border-amber-100/50 dark:border-slate-700">
+                      <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+                        <AchIcon size={18} />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">{ach.title}</h4>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{ach.description}</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">{ach.title}</h4>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{ach.description}</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

@@ -6,10 +6,11 @@ import { executeQuery } from '@/lib/db';
 import { SqlEditor } from '@/components/SqlEditor';
 import { ResultTable } from '@/components/ResultTable';
 import { SchemaPanel } from '@/components/SchemaPanel';
-import { ArrowLeft, CheckCircle, HelpCircle, ChevronRight, ChevronLeft, List, Database, X, BookOpen, Code2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle, HelpCircle, ChevronRight, ChevronLeft, List, Database, X, BookOpen, Code2, Sparkles, Star } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import clsx from 'clsx';
+import { StarAnimation } from '@/components/StarAnimation';
 
 type LessonStep = 'learn' | 'quiz' | 'code';
 
@@ -35,6 +36,9 @@ export function Lesson() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [quizAnswered, setQuizAnswered] = useState(false);
 
+  // Animation state
+  const [showStars, setShowStars] = useState(false);
+
   useEffect(() => {
     if (moduleId && lessonId) {
       const module = curriculum.find(m => m.id === moduleId);
@@ -52,6 +56,7 @@ export function Lesson() {
         setStep('learn');
         setSelectedAnswer(null);
         setQuizAnswered(false);
+        setShowStars(false);
       } else {
         navigate('/');
       }
@@ -59,9 +64,13 @@ export function Lesson() {
   }, [moduleId, lessonId, navigate]);
 
   const handleQuizAnswer = (index: number) => {
-    if (quizAnswered) return;
+    if (quizAnswered || !lesson) return;
     setSelectedAnswer(index);
     setQuizAnswered(true);
+    // Trigger stars if correct
+    if (lesson.quiz.options[index]?.isCorrect) {
+      setShowStars(true);
+    }
   };
 
   const handleRun = async () => {
@@ -118,6 +127,7 @@ export function Lesson() {
       if (isMatch) {
         setIsSuccess(true);
         setFeedback(null);
+        setShowStars(true);
         completeLesson(lesson.id);
       } else {
         setAttempts(prev => prev + 1);
@@ -235,6 +245,9 @@ export function Lesson() {
 
   return (
     <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 overflow-hidden">
+      {/* Star celebration animation */}
+      <StarAnimation trigger={showStars} onComplete={() => setShowStars(false)} />
+
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 h-14 shrink-0 z-20">
         <div className="flex items-center gap-3">
